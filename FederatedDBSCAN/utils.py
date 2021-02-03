@@ -34,20 +34,9 @@ def partitionDataset(M = 2):
             df = pd.DataFrame(data[lowerB:upperB])
 
             start = datetime.now()
-            attributes = [(c, 'NUMERIC') for c in df.columns.values[:-1]]
-            t = df.columns[-1]
-            attributes += [('class', df[t].unique().astype(str).tolist())]
-            partitionData = [df.loc[j].values[:-1].tolist() + [str(df[t].loc[j], 'utf-8')] for j in range(df.shape[0])]
-            arff_dic = {
-                'attributes': attributes,
-                'data': partitionData,
-                'relation': 'banana1',
-                'description': ''
-            }
+            dumpArff(df, i)
             print(datetime.now() - start)
 
-            with open(f'{PARTITIONS_PATH}partition{i}.arff', "w", encoding="utf8") as f:
-                arff.dump(arff_dic, f)
     #elif partitioningIndex == 1:
     #    i = 1
     #elif partitioningIndex == 2:
@@ -55,5 +44,19 @@ def partitionDataset(M = 2):
     #else:
     #    i = 3
 
+def dumpArff(df, partitionIndex):
+    attributes = [(c, 'NUMERIC') for c in df.columns.values[:-1]]
+    t = df.columns[-1]
+    attributes += [('class', df[t].unique().astype(str).tolist())]
+    partitionData = [df.loc[j].values[:-1].tolist() + [str(df[t].loc[j], 'utf-8')] for j in range(df.shape[0])]
+    arff_dic = {
+        'attributes': attributes,
+        'data': partitionData,
+        'relation': 'banana1',
+        'description': ''
+    }
+
+    with open(f'{PARTITIONS_PATH}partition{partitionIndex}.arff', "w", encoding="utf8") as f:
+        arff.dump(arff_dic, f)
 
 
