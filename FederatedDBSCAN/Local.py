@@ -8,14 +8,14 @@ MIN_PTS = 4
 if __name__ == "__main__":
     data, meta = arff.loadarff('banana.arff')
 
+    dimension = len(data[0]) - 1
+
     points = []
 
     for row in data:
-        points.append([math.floor(row[0] / L), math.floor(row[1] / L)])
+        points.append(tuple(math.floor(row[i] / L) for i in range(dimension)))
 
     arrPoints = np.array(points)
-
-    print(arrPoints)
 
     maxX = np.amax(arrPoints[:, 0])
     maxY = np.amax(arrPoints[:, 1])
