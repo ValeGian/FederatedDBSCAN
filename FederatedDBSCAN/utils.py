@@ -13,7 +13,6 @@ def partitionDataset(M = 2):
     #print(f'Choose the dataset to be partitioned:\n{os.listdir(DATASETS_PATH)}')
     #file = DATASETS_PATH + input()
     #print()
-
     file = DATASETS_PATH + "banana.arff"
     #file = PARTITIONS_PATH + "partition0.arff"
     data, meta = arffsc.loadarff(file)
@@ -21,24 +20,38 @@ def partitionDataset(M = 2):
     #print('Choose the partitioning method:')
     #for (i, item) in enumerate(PARTITIONING_METHODS):
         #print(f'{i} -> {item}')
-    #partitioningIndex = input();
-    partitioningIndex = 0
+    #partitioningMethod = input();
+    partitioningMethod = 1
     #print()
 
-    if partitioningIndex == 0:
+    if partitioningMethod == 0:
+        start = datetime.now()
         rng = np.random.default_rng()
         rng.shuffle(data)
         for i in range(M):
             lowerB = i * data.size // M
             upperB = (i+1) * data.size // M
             df = pd.DataFrame(data[lowerB:upperB])
-
-            start = datetime.now()
             dumpArff(df, i)
-            print(datetime.now() - start)
+        print(datetime.now() - start)
+    elif partitioningMethod == 1:
+        start = datetime.now()
+        classes = np.unique(data[meta.names()[-1]]).tolist()
+        N = len(classes)
 
-    #elif partitioningIndex == 1:
-    #    i = 1
+        separatedL = [[] for n in range(N)]
+        for elem in data:
+            separatedL[classes.index(elem[-1])].append(elem)
+
+        if M >= N:
+            for i in range(N):
+                for j in range(M//N):
+                    lowerB = j * len(separatedL[i]) // (M//N)
+                    upperB = (j+1) * len(separatedL[i]) // (M//N)
+                    arr = np.array(separatedL[i][lowerB:upperB])
+                    df = pd.DataFrame(arr)
+                    dumpArff(df, i * M // N + j)
+        print(datetime.now() - start)
     #elif partitioningIndex == 2:
     #    i = 2
     #else:
@@ -52,11 +65,13 @@ def dumpArff(df, partitionIndex):
     arff_dic = {
         'attributes': attributes,
         'data': partitionData,
-        'relation': 'banana1',
+        'relation': f'partition{partitionIndex}',
         'description': ''
     }
 
     with open(f'{PARTITIONS_PATH}partition{partitionIndex}.arff', "w", encoding="utf8") as f:
         arff.dump(arff_dic, f)
 
-
+def removePartitions():
+    for file in os.listdir(PARTITIONS_PATH):
+        os.remove(f'{PARTITIONS_PATH}{file}')
