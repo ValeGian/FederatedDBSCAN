@@ -1,3 +1,5 @@
+import math
+
 from scipy.io import arff as arffsc
 import arff
 import os
@@ -75,3 +77,11 @@ def dumpArff(df, partitionIndex):
 def removePartitions():
     for file in os.listdir(PARTITIONS_PATH):
         os.remove(f'{PARTITIONS_PATH}{file}')
+
+
+def obtainSuddivision(num_class , num_node ):
+    arr_to_return = np.full(num_class, math.floor(num_node/num_class))
+    for i in range(num_node % num_class):
+        arr_to_return[i] += 1
+
+    return arr_to_return

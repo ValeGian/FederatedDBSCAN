@@ -6,7 +6,7 @@ L = 0.01
 MIN_PTS = 4
 
 if __name__ == "__main__":
-    data, meta = arff.loadarff('banana.arff')
+    data, meta = arff.loadarff('datasets/banana.arff')
 
     dimension = len(data[0]) - 1
 
