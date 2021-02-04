@@ -3,9 +3,11 @@ import numpy as np
 import math
 
 L = 0.01
-MIN_PTS = 4
+PARTITIONS_PATH = "./partitions/partition"
 
-if __name__ == "__main__":
+
+def compute_local_update(my_index):
+    #data, meta = arff.loadarff(f'{PARTITIONS_PATH}{my_index}.arff')
     data, meta = arff.loadarff('datasets/banana.arff')
 
     dimension = len(data[0]) - 1
@@ -15,25 +17,24 @@ if __name__ == "__main__":
     for row in data:
         points.append(tuple(math.floor(row[i] / L) for i in range(dimension)))
 
-    arrPoints = np.array(points)
+    arr_points = np.array(points)
 
-    maxX = np.amax(arrPoints[:, 0])
-    maxY = np.amax(arrPoints[:, 1])
+    max_x = np.amax(arr_points[:, 0])
+    max_y = np.amax(arr_points[:, 1])
 
-    count_matrix = np.zeros((maxX + 1, maxY + 1))
+    count_matrix = np.zeros((max_x + 1, max_y + 1))
     print(count_matrix.shape)
 
-    for x, y in arrPoints:
+    for x, y in arr_points:
         count_matrix[x][y] += 1
         print(f'elemento [{x}][{y}] : {count_matrix[x][y]}')
 
-    list_to_return = []
-    for x in range(maxX):
-        for y in range(maxY):
-            if count_matrix[x][y] >= MIN_PTS:
-                list_to_return.append((x, y))
+    dict_to_return = {}
+    for x in range(max_x):
+        for y in range(max_y):
+            if count_matrix[x][y] >= 1:
+                dict_to_return[(x, y)] = count_matrix[x][y]
 
-    for i in list_to_return:
-        print(f'elemento {i} contiene: {count_matrix[i[0]][i[1]]} elementi')
-
-    print(f'celle dense totali: {len(list_to_return)}')
+    return dict_to_return
+    # for key, value in dict_to_return.items():
+    # print(f'la cella: {key} contiene {value} elementi')

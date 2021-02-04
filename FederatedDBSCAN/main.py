@@ -41,8 +41,7 @@ if __name__ == '__main__':
 
     contribuitionMap = {}
     for i in range(M):
-        #localUpdate = node.computeLocalUpdate(i)
-        localUpdate = {(1, 1): 5, (3, 5): 2, (0, 1):1, (0, 1):3, (2, 5):1, (5, 6):9, (0, 0): 20}
+        localUpdate = node.compute_local_update(i)
         for key, value in localUpdate.items():
             if key in contribuitionMap:
                 contribuitionMap[key] += value
