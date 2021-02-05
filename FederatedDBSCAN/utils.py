@@ -1,5 +1,4 @@
 import math
-
 from scipy.io import arff as arffsc
 import arff
 import os
@@ -16,7 +15,7 @@ def partitionDataset(M = 2):
     #print(f'Choose the dataset to be partitioned:\n{os.listdir(DATASETS_PATH)}')
     #file = DATASETS_PATH + input()
     #print()
-    file = DATASETS_PATH + "banana.arff"
+    file = DATASETS_PATH + "3MC.arff"
     data, meta = arffsc.loadarff(file)
 
     #print('Choose the partitioning method:')
