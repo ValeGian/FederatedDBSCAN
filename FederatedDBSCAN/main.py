@@ -16,7 +16,5 @@ if __name__ == '__main__':
                 contribuitionMap[key] += value
             else:
                 contribuitionMap[key] = value
-    print(contribuitionMap)
     #clusters = computeClusters(localUpdates)
-    #mapGraphicalDebug(contribuitionMap)
     mapPlotDebug(contribuitionMap)
