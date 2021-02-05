@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def mapPlotDebug(contribuitionMap):
+    print("---PLOTTING---")
     maxX = 0
     maxY = 0
     for key in contribuitionMap.keys():
@@ -10,10 +11,14 @@ def mapPlotDebug(contribuitionMap):
         if key[1] > maxY:
             maxY = key[1]
 
-    matrix = np.zeros((maxX + 1, maxY + 1))
+    print(f'MAX_X: {maxX}')
+    print(f'MAX_Y: {maxY}')
+    #matrix = np.zeros((maxX + 1, maxY + 1))
+    matrix = np.zeros((maxY + 1, maxX + 1))
 
     for key, value in contribuitionMap.items():
-        matrix[key[0]][key[1]] += value
+        #matrix[key[0]][key[1]] += value
+        matrix[key[1]][key[0]] += value
 
     print(matrix)
     plt.imshow(matrix, cmap='gray_r', origin='lower')
