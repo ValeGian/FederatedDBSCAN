@@ -20,6 +20,5 @@ def mapPlotDebug(contributionMap):
         #matrix[key[0]][key[1]] += value
         matrix[key[1]][key[0]] += value
 
-    print(matrix)
     plt.imshow(matrix, cmap='gray_r', origin='lower')
     plt.show()
