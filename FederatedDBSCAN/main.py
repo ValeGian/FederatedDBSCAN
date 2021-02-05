@@ -7,14 +7,14 @@ if __name__ == '__main__':
     M = 2
     partitionDataset(M)
 
-    contribuitionMap = {}
+    contributionMap = {}
     for i in range(M):
         localUpdate = node.compute_local_update(i)
         #localUpdate = {(1, 2): 5, (3, 6): 3, (0, 0): 12}
         for key, value in localUpdate.items():
-            if key in contribuitionMap:
-                contribuitionMap[key] += value
+            if key in contributionMap:
+                contributionMap[key] += value
             else:
-                contribuitionMap[key] = value
+                contributionMap[key] = value
     #clusters = computeClusters(localUpdates)
-    mapPlotDebug(contribuitionMap)
+    mapPlotDebug(contributionMap)
