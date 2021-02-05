@@ -1,20 +1,25 @@
+from server import compute_clusters
 from utils import *
-import Local as node
 from debug import *
+import Local as node
+import numpy as np
+from collections import OrderedDict
+
 
 if __name__ == '__main__':
     #M = int(input("Insert the number of nodes: "))
     M = 2
-    partitionDataset(M)
+    #partitionDataset(M)
 
-    contribuitionMap = {}
+    contribution_map = OrderedDict()
     for i in range(M):
         localUpdate = node.compute_local_update(i)
-        #localUpdate = {(1, 2): 5, (3, 6): 3, (0, 0): 12}
         for key, value in localUpdate.items():
-            if key in contribuitionMap:
-                contribuitionMap[key] += value
+            if key in contribution_map:
+                contribution_map[key] += value
             else:
-                contribuitionMap[key] = value
-    #clusters = computeClusters(localUpdates)
-    mapPlotDebug(contribuitionMap)
+                contribution_map[key] = value
+    print(contribution_map)
+    clusters = compute_clusters(contribution_map)
+    mapPlotDebug(contribution_map)
+

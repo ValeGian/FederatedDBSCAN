@@ -2,8 +2,14 @@ from scipy.io import arff
 import numpy as np
 import math
 
+from collections import OrderedDict
+
 L = 0.01
 PARTITIONS_PATH = "./partitions/partition"
+
+if __name__ == '__main__':
+    l = np.array([1, 3, 5, -92, 8])
+    print(np.amax(l))
 
 
 def compute_local_update(my_index):
@@ -26,7 +32,7 @@ def compute_local_update(my_index):
     for x, y in arr_points:
         count_matrix[x][y] += 1
 
-    dict_to_return = {}
+    dict_to_return = OrderedDict()
     for x in range(max_x):
         for y in range(max_y):
             if count_matrix[x][y] >= 1:
