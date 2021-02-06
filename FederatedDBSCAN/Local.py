@@ -4,7 +4,7 @@ import math
 
 from collections import OrderedDict
 
-L = 0.01
+L = 0.02
 PARTITIONS_PATH = "./partitions/partition"
 
 if __name__ == '__main__':

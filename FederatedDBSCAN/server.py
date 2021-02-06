@@ -19,7 +19,7 @@ def compute_clusters(contribution_map):
     n_dense_cell = len(key_list)
     visited = np.zeros(n_dense_cell)
     clusters = []
-    while visited.__contains__(0):
+    while 0 in visited:
         for curr_cell in key_list:
             curr_index = key_list.index(curr_cell)
             if visited[curr_index] == 0:
