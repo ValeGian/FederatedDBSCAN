@@ -21,8 +21,6 @@ def compute_local_update(my_index):
     min_x = np.amin(arr_points[:, 0])
     max_y = np.amax(arr_points[:, 1])
     min_y = np.amin(arr_points[:, 1])
-    print(f'X: [{min_x}, {max_x}]')
-    print(f'Y: [{min_y}, {max_y}]')
 
     x_shift = 0
     if min_x < 0:

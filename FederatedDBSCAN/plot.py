@@ -20,29 +20,28 @@ def plotGridMap(contributionMap):
     plt.show()
 
 
-def plot2Dcluster(clusters: np.ndarray, outlierIndex = -1):
-    colors = cm.rainbow(np.linspace(0, 1, len(clusters)))
-    count = 0
+def plot2Dcluster(points: np.ndarray, labels:np.ndarray):
+    color_range = cm.rainbow(np.linspace(0, 1, len(np.unique(labels))))
+    colors = []
     count_outliers = 0
-    for cluster, col in zip(clusters, colors):
-        if count == outlierIndex:
-            count_outliers += len(cluster)
-            col = [0, 0, 0, 1]  # Black used for outliers
-        X1 = [cord[0] for cord in cluster]
-        X2 = [cord[1] for cord in cluster]
-        plt.scatter(X1, X2, color=col)
-        count += 1
+    for label in labels:
+        if label == -1:
+            count_outliers += 1
+            colors.append([0, 0, 0, 1])  # Black used for outliers
+        else:
+            colors.append(color_range[label])
+            #print(f'{label} - {color_range[label]}')
 
-    if outlierIndex >= 0:
-        count -= 1
-
-    plt.title(f'{count} Clusters - {count_outliers} Outliers')
+    print(len(np.unique(labels)))
+    print(1 if count_outliers > 0 else 0)
+    print(len(np.unique(labels)) - (1 if count_outliers > 0 else 0))
+    print(count_outliers)
+    plt.scatter(points[:, 0], points[:, 1], color=colors)
+    plt.title(f'{len(np.unique(labels)) - (1 if count_outliers > 0 else 0)} Clusters - {count_outliers} Outliers')
     plt.show()
 
 
 if __name__ == '__main__':
-    test_dict = {(0, 1): 4, (2, 2): 6, (3, 1): 7, (1, 2): 10, (3, 2): 11, (-3, 1): 7, (2, -1): 2}
-
-    clusters = [[(0, 1), (0, 2), (0, 3), (0, 4)], [(1, 1), (1, 5), (1, 3), (1, 2)], [(2, 1), (2, 13)], [(3, 10), (3, 11)]]
-    a = np.array([np.array(x) for x in clusters], dtype=object)
-    plot2Dcluster(a)
+    points = np.array([[1, 1], [2, 4], [3, 5], [2, 2]])
+    labels = np.array([1, 0, 0, -1])
+    plot2Dcluster(points, labels)
