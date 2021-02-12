@@ -1,6 +1,6 @@
-from utils import *
-from debug import *
-import Local as node
+from partition import *
+from plot import *
+import local as node
 import numpy as np
 from collections import OrderedDict
 
@@ -12,7 +12,7 @@ def get_all_neighbor(cell):
     return [(x - 1, y), (x + 1, y), (x, y + 1), (x, y - 1), (x - 1, y + 1), (x + 1, y + 1), (x - 1, y - 1), (x + 1, y - 1)]
 
 
-def compute_clusters(contribution_map):
+def compute_clusters(contribution_map) -> np.ndarray:
     key_list = list(contribution_map.keys())
     value_list = list(contribution_map.values())
 
@@ -48,4 +48,5 @@ def compute_clusters(contribution_map):
                     print(f"aggiunto nuovo cluster con {len(cluster)} elementi: {cluster}")
 
     print(len(clusters))
-    return clusters
+    clusters_array = np.array([np.array(x) for x in clusters], dtype=object)
+    return clusters_array
