@@ -32,10 +32,6 @@ def plot2Dcluster(points: np.ndarray, labels:np.ndarray):
             colors.append(color_range[label])
             #print(f'{label} - {color_range[label]}')
 
-    print(len(np.unique(labels)))
-    print(1 if count_outliers > 0 else 0)
-    print(len(np.unique(labels)) - (1 if count_outliers > 0 else 0))
-    print(count_outliers)
     plt.scatter(points[:, 0], points[:, 1], color=colors)
     plt.title(f'{len(np.unique(labels)) - (1 if count_outliers > 0 else 0)} Clusters - {count_outliers} Outliers')
     plt.show()
