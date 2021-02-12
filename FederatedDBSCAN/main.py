@@ -1,14 +1,14 @@
 from server import compute_clusters
 from utils import partitionDataset
-from debug import mapPlotDebug
+from debug import mapPlotDebug, map_plot_cluster
 import Local as node
 import numpy as np
 from collections import OrderedDict
 
 if __name__ == '__main__':
     #M = int(input("Insert the number of nodes: "))
-    M = 2
-    partitionDataset(M)
+    M = 1
+    #partitionDataset(M)
 
     contribution_map = OrderedDict()
     for i in range(M):
@@ -20,5 +20,10 @@ if __name__ == '__main__':
                 contribution_map[key] = value
     print(contribution_map)
     clusters = compute_clusters(contribution_map)
-    mapPlotDebug(contribution_map)
+    #mapPlotDebug(contribution_map)
+    #map_plot_cluster(clusters)
+
+    for i in range(M):
+        node.assign_points_to_cluster(i, clusters)
+
 
