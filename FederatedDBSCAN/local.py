@@ -2,6 +2,7 @@ from scipy.io import arff
 import numpy as np
 from scipy.spatial import distance
 import math
+import arffutils as arUt
 
 from collections import OrderedDict
 
@@ -47,7 +48,6 @@ def compute_local_update(my_index):
 def get_points(my_index, floor=1):
     #data, meta = arff.loadarff(f'{PARTITIONS_PATH}{my_index}.arff')
     data, meta = arff.loadarff(f'datasets/banana.arff')
-
     dimension = len(data[0]) - 1
     points = []
     only_10 = 10
@@ -62,14 +62,17 @@ def get_points(my_index, floor=1):
     return points
 
 
-def assign_points_to_cluster(my_index, clusters):
+def assign_points_to_cluster(my_index, array_cells, labels):
 
     points = get_points(my_index, 0)
-
-    mapping_dict = {}
     cells = get_points(my_index)
-    outlier_list = []
-    no_assigned = []
+
+    dense_cells = []
+    for row in array_cells:
+        dense_cells.append(tuple(row))
+
+    points_to_return = []
+    labels_to_return = []
 
     while len(cells) > 0:
         actual_cell = cells.pop(0)
@@ -77,40 +80,36 @@ def assign_points_to_cluster(my_index, clusters):
         assigned = False
         outlier = True
 
-        for cluster in clusters:
-            if actual_cell in cluster:
-                mapping_dict[actual_point] = clusters.index(cluster)
-                assigned = True
-                break
+        if actual_cell in dense_cells:
+            points_to_return.append(actual_point)
+            labels_to_return.append(labels[dense_cells.index(actual_cell)])
+            assigned = True
 
         if not assigned:
             min_dist = float('inf')
             cluster_to_assign = -1
-            no_assigned.append(actual_point)
             check_list = get_all_neighbor(actual_cell)
             for check_cell in check_list:
-                for cluster in clusters:
-                    if check_cell in cluster:
-                        a = ((check_cell[0] * L) + L/2, (check_cell[1] * L) + L/2)
-                        actual_dist = distance.euclidean(actual_point, a)
-                        if actual_dist < min_dist:
-                            min_dist = actual_dist
-                            cluster_to_assign = clusters.index(cluster)
-                            print(f"check cell: {check_cell}, a: {a}, actual point: {actual_point}, min_dist: {min_dist}, cluster: {cluster_to_assign}")
+                if check_cell in dense_cells:
+                    cell_mid_point = ((check_cell[0] * L) + L/2, (check_cell[1] * L) + L/2)
+                    actual_dist = distance.euclidean(actual_point, cell_mid_point)
+                    if actual_dist < min_dist:
+                        min_dist = actual_dist
+                        cluster_to_assign = labels[dense_cells.index(check_cell)]
 
-                        outlier = False
-                        break
+                    outlier = False
 
             if outlier:
-                outlier_list.append(actual_point)
+                points_to_return.append(actual_point)
+                labels_to_return.append(-1)
             else:
-                mapping_dict[actual_point] = cluster_to_assign
+                points_to_return.append(actual_point)
+                labels_to_return.append(cluster_to_assign)
 
-    
+    print(f'len: {len(points_to_return)}, points: {points_to_return}')
+    print(f'len: {len(labels_to_return)}, points: {labels_to_return}')
 
-    print(f'len: {len(outlier_list)}, outlier: {outlier_list}')
-    print(f'len: {len(no_assigned)}, no_assigned: {no_assigned}')
-    print(f'len: {len(mapping_dict.keys())}, output: {mapping_dict}')
+    return np.array(points_to_return), np.array(labels_to_return)
 
 
 if __name__ == '__main__':

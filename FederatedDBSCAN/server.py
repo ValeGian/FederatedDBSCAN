@@ -18,7 +18,7 @@ def compute_clusters(contribution_map) -> (np.ndarray, np.ndarray):
 
     n_dense_cell = len(key_list)
     visited = np.zeros(n_dense_cell)
-    points = []
+    cells = []
     labels = []
     cluster_ID = 0
     while 0 in visited:
@@ -30,7 +30,7 @@ def compute_clusters(contribution_map) -> (np.ndarray, np.ndarray):
                 if num_point < MIN_PTS:
                     continue
                 else:
-                    points.append(curr_cell)
+                    cells.append(curr_cell)
                     labels.append(cluster_ID)
 
                     list_of_cell_to_check = get_all_neighbor(curr_cell)
@@ -42,10 +42,10 @@ def compute_clusters(contribution_map) -> (np.ndarray, np.ndarray):
                             neighbor_index = key_list.index(neighbor)
                             visited[neighbor_index] = 1
                             if value_list[neighbor_index] >= MIN_PTS:
-                                points.append(neighbor)
+                                cells.append(neighbor)
                                 labels.append(cluster_ID)
                                 list_of_cell_to_check += get_all_neighbor(neighbor)
 
                     cluster_ID += 1
 
-    return np.array(points), np.array(labels)
+    return np.array(cells), np.array(labels)
