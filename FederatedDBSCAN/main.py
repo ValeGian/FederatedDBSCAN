@@ -20,7 +20,7 @@ if __name__ == '__main__':
 
     #M = int(input("Insert the number of nodes: "))
     # print()
-    M = 2
+    M = 3
 
     # print('Choose the partitioning method:')
     # for (i, item) in enumerate(PARTITIONING_METHODS):
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     L = 0.02
     MIN_PTS = 4
 
-    prt.partitionDataset(file, M, partitioning_method)
+    arf = prt.partitionDataset(file, M, partitioning_method)
 
     #for i in range(M):
     #    points, labels = arff.loadpartitionNDArray(i)
@@ -51,35 +51,38 @@ if __name__ == '__main__':
     cells, cell_labels = srv.compute_clusters(contribution_map, MIN_PTS)
     #plt.plot2Dcluster(cells, cell_labels)
 
-    points = []
-    labels = []
+    elaborated_points = []
+    elaborated_labels = []
     for i in range(M):
         local_points, local_labels = lcl.assign_points_to_cluster(i, cells, cell_labels, L)
-        if len(points) == 0:
-            points = local_points
-            labels = local_labels
+        if len(elaborated_points) == 0:
+            elaborated_points = local_points
+            elaborated_labels = local_labels
         else:
-            points = np.concatenate((points, local_points), axis=0)
-            labels = np.concatenate((labels, local_labels), axis=0)
-        plt.plot2Dcluster(local_points, local_labels)
-    plt.plot2Dcluster(points, labels)
+            elaborated_points = np.concatenate((elaborated_points, local_points), axis=0)
+            elaborated_labels = np.concatenate((elaborated_labels, local_labels), axis=0)
+        #plt.plot2Dcluster(local_points, local_labels)
+    plt.plot2Dcluster(elaborated_points, elaborated_labels, message="Federated")
 
-    predicted_labels = cltr.dbscan(points, eps=L / 2, min_pts=MIN_PTS)
-    plt.plot2Dcluster(points, predicted_labels)
-
-    Tpoints, Tlabels = arff.loadarffNDArray(file)
-
+    '''EVALUATION'''
+    ### FEDERATED ###
+    Tpoints, Tlabels = arff.arffToNDArray(arf)
     print(f'Federated\t>>\t'
-          f'PURITY: {cltr.PURITY_score(Tlabels, labels):.4f}\t-\t'
-          f'ARI: {cltr.ARI_score(Tlabels, labels):.4f}\t-\t'
-          f'AMI: {cltr.AMI_score(Tlabels, labels):.4f}')
+          f'PURITY: {cltr.PURITY_score(Tlabels, elaborated_labels):.4f}\t-\t'
+          f'ARI: {cltr.ARI_score(Tlabels, elaborated_labels):.4f}\t-\t'
+          f'AMI: {cltr.AMI_score(Tlabels, elaborated_labels):.4f}')
+
+    ### DBSCAN ###
+    Tpoints, Tlabels = arff.loadarffNDArray(file)
+    predicted_labels = cltr.dbscan(Tpoints, eps=L / 2, min_pts=MIN_PTS)
+    plt.plot2Dcluster(Tpoints, predicted_labels, message="DBSCAN")
+
+    plt.plot2Dcluster(Tpoints, Tlabels, message="Original")
 
     print(f'DBSCAN\t\t>>\t'
           f'PURITY: {cltr.PURITY_score(Tlabels, predicted_labels):.4f}\t-\t'
           f'ARI: {cltr.ARI_score(Tlabels, predicted_labels):.4f}\t-\t'
           f'AMI: {cltr.AMI_score(Tlabels, predicted_labels):.4f}')
-
-
 '''
     for L in np.arange(1, 8, 0.5)/100:
         MinPts = 4

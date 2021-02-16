@@ -52,6 +52,7 @@ def partitionDataset(file, M = 1, partitioning_method = 0):
     #    i = 2
     #else:
     #    i = 3
+    return data, meta
 
 def removePartitions():
     for file in os.listdir(PARTITIONS_PATH):

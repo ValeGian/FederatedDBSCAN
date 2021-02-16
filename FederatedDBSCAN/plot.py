@@ -25,10 +25,11 @@ def plotGridMap(contributionMap):
     plt.show()
 
 
-def plot2Dcluster(points: np.ndarray, labels:np.ndarray):
-    color_range = cm.rainbow(np.linspace(0, 1, len(np.unique(labels))))
+def plot2Dcluster(points: np.ndarray, labels:np.ndarray, message=""):
+    color_range = cm.rainbow(np.linspace(0, 1, np.max(np.unique(labels))+1))
     colors = []
     count_outliers = 0
+
     for label in labels:
         if label == -1:
             count_outliers += 1
@@ -38,7 +39,7 @@ def plot2Dcluster(points: np.ndarray, labels:np.ndarray):
             #print(f'{label} - {color_range[label]}')
 
     plt.scatter(points[:, 0], points[:, 1], color=colors)
-    plt.title(f'{len(labels)} Points - {len(np.unique(labels)) - (1 if count_outliers > 0 else 0)} Clusters - {count_outliers} Outliers')
+    plt.title(f'{message} - {len(labels)} Points - {len(np.unique(labels)) - (1 if count_outliers > 0 else 0)} Clusters - {count_outliers} Outliers')
     plt.show()
 
 
