@@ -8,8 +8,13 @@ def plotGridMap(contributionMap):
     maxY = max([cord[1] for cord in contributionMap.keys()])
     minY = min([cord[1] for cord in contributionMap.keys()])
 
-    x_shift = -1 * minX
-    y_shift = -1 * minY
+    x_shift = 0
+    if minX < 0:
+        x_shift = -1 * minX
+
+    y_shift = 0
+    if minY < 0:
+        y_shift = -1 * minY
 
     matrix = np.zeros((maxY + 1 + y_shift, maxX + 1 + x_shift))
 
@@ -33,7 +38,7 @@ def plot2Dcluster(points: np.ndarray, labels:np.ndarray):
             #print(f'{label} - {color_range[label]}')
 
     plt.scatter(points[:, 0], points[:, 1], color=colors)
-    plt.title(f'{len(np.unique(labels)) - (1 if count_outliers > 0 else 0)} Clusters - {count_outliers} Outliers')
+    plt.title(f'{len(labels)} Points - {len(np.unique(labels)) - (1 if count_outliers > 0 else 0)} Clusters - {count_outliers} Outliers')
     plt.show()
 
 

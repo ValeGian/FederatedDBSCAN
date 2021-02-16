@@ -4,15 +4,13 @@ import local as node
 import numpy as np
 from collections import OrderedDict
 
-MIN_PTS = 4
-
 
 def get_all_neighbor(cell):
     (x, y) = cell
     return [(x - 1, y), (x + 1, y), (x, y + 1), (x, y - 1), (x - 1, y + 1), (x + 1, y + 1), (x - 1, y - 1), (x + 1, y - 1)]
 
 
-def compute_clusters(contribution_map) -> (np.ndarray, np.ndarray):
+def compute_clusters(contribution_map, MIN_PTS) -> (np.ndarray, np.ndarray):
     key_list = list(contribution_map.keys())
     value_list = list(contribution_map.values())
 

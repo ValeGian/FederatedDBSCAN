@@ -8,22 +8,12 @@ import arffutils as arff
 PARTITIONS_PATH = "./partitions/"
 PARTITIONING_METHODS = ["stratified", "separated", "partially_separated"]
 
-def partitionDataset(M = 2):
+def partitionDataset(file, M = 1, partitioning_method = 0):
     removePartitions()
-    #print(f'Choose the dataset to be partitioned:\n{os.listdir(DATASETS_PATH)}')
-    #file = DATASETS_PATH + input()
-    #print()
-    file = "banana.arff"
+
     data, meta = arff.loadarff(file)
 
-    #print('Choose the partitioning method:')
-    #for (i, item) in enumerate(PARTITIONING_METHODS):
-        #print(f'{i} -> {item}')
-    #partitioningMethod = input();
-    partitioningMethod = 1
-    #print()
-
-    if partitioningMethod == 0:
+    if partitioning_method == 0:
         rng = np.random.default_rng()
         rng.shuffle(data)
         for i in range(M):
@@ -31,7 +21,7 @@ def partitionDataset(M = 2):
             upperB = (i+1) * data.size // M
             df = pd.DataFrame(data[lowerB:upperB])
             arff.dumpArff(df, i)
-    elif partitioningMethod == 1:
+    elif partitioning_method == 1:
         classes = np.unique(data[meta.names()[-1]]).tolist()
         N = len(classes)
 

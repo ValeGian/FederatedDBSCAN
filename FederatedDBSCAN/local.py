@@ -1,13 +1,9 @@
-from scipy.io import arff
 import numpy as np
 from scipy.spatial import distance
 import math
-import arffutils as arUt
+import arffutils as arff
 
 from collections import OrderedDict
-
-L = 0.02
-PARTITIONS_PATH = "./partitions/partition"
 
 
 def get_all_neighbor(cell):
@@ -15,8 +11,8 @@ def get_all_neighbor(cell):
     return [(x - 1, y), (x + 1, y), (x, y + 1), (x, y - 1), (x - 1, y + 1), (x + 1, y + 1), (x - 1, y - 1), (x + 1, y - 1)]
 
 
-def compute_local_update(my_index):
-    arr_points = np.array(get_points(my_index))
+def get_local_points(my_index, L):
+    arr_points = np.array(get_points(my_index, L))
 
     max_x = np.amax(arr_points[:, 0])
     min_x = np.amin(arr_points[:, 0])
@@ -28,8 +24,8 @@ def compute_local_update(my_index):
         x_shift = -1 * min_x
 
     y_shift = 0
-    if min_x < 0:
-        y_shift = -1 * min_x
+    if min_y < 0:
+        y_shift = -1 * min_y
 
     count_matrix = np.zeros((max_x + 1 + x_shift, max_y + 1 + y_shift))
 
@@ -45,15 +41,11 @@ def compute_local_update(my_index):
     return dict_to_return
 
 
-def get_points(my_index, floor=1):
-    #data, meta = arff.loadarff(f'{PARTITIONS_PATH}{my_index}.arff')
-    data, meta = arff.loadarff(f'datasets/banana.arff')
+def get_points(partition_index, L, floor=True):
+    data, meta = arff.loadpartition(partition_index)
     dimension = len(data[0]) - 1
     points = []
-    only_10 = 10
     for row in data:
-
-
         if floor:
             points.append(tuple(math.floor(row[i] / L) for i in range(dimension)))
         else:
@@ -62,10 +54,10 @@ def get_points(my_index, floor=1):
     return points
 
 
-def assign_points_to_cluster(my_index, array_cells, labels):
+def assign_points_to_cluster(my_index, array_cells, labels, L):
 
-    points = get_points(my_index, 0)
-    cells = get_points(my_index)
+    points = get_points(my_index, L, floor=False)
+    cells = get_points(my_index, L)
 
     dense_cells = []
     for row in array_cells:
@@ -106,11 +98,11 @@ def assign_points_to_cluster(my_index, array_cells, labels):
                 points_to_return.append(actual_point)
                 labels_to_return.append(cluster_to_assign)
 
-    print(f'len: {len(points_to_return)}, points: {points_to_return}')
-    print(f'len: {len(labels_to_return)}, points: {labels_to_return}')
+    #print(f'len: {len(points_to_return)}, points: {points_to_return}')
+    #print(f'len: {len(labels_to_return)}, points: {labels_to_return}')
 
     return np.array(points_to_return), np.array(labels_to_return)
 
 
 if __name__ == '__main__':
-    print(compute_local_update(0))
+    print(get_local_points(0))

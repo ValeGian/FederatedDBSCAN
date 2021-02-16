@@ -3,17 +3,30 @@ import arff
 import numpy as np
 
 DATASETS_PATH = "./datasets/"
-PARTITIONS_PATH = "./partitions/"
+PARTITIONS_PATH = "./partitions/partition"
+
 
 def loadarff(file):
     path = DATASETS_PATH + file
     return arffsc.loadarff(path)
 
+
 def loadarffNDArray(file):
     arff = loadarff(file)
     return arffToNDArray(arff)
 
-def dumpArff(df, partitionIndex):
+
+def loadpartition(partition_index):
+    path = f'{PARTITIONS_PATH}{partition_index}.arff'
+    return arffsc.loadarff(path)
+
+
+def loadpartitionNDArray(partition_index):
+    arff = loadpartition(partition_index)
+    return arffToNDArray(arff)
+
+
+def dumpArff(df, partition_index):
     attributes = [(c, 'NUMERIC') for c in df.columns.values[:-1]]
     t = df.columns[-1]
     attributes += [('class', df[t].unique().astype(str).tolist())]
@@ -21,12 +34,13 @@ def dumpArff(df, partitionIndex):
     arff_dic = {
         'attributes': attributes,
         'data': partitionData,
-        'relation': f'partition{partitionIndex}',
+        'relation': f'partition{partition_index}',
         'description': ''
     }
 
-    with open(f'{PARTITIONS_PATH}partition{partitionIndex}.arff', "w", encoding="utf8") as f:
+    with open(f'{PARTITIONS_PATH}{partition_index}.arff', "w", encoding="utf8") as f:
         arff.dump(arff_dic, f)
+
 
 def arffToNDArray(arff) -> (np.ndarray, np.ndarray):
     data = arff[0]
