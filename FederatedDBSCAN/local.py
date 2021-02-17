@@ -7,8 +7,18 @@ from collections import OrderedDict
 
 
 def get_all_neighbor(cell):
-    (x, y) = cell
-    return [(x - 1, y), (x + 1, y), (x, y + 1), (x, y - 1), (x - 1, y + 1), (x + 1, y + 1), (x - 1, y - 1), (x + 1, y - 1)]
+    diag_coord = [(x - 1, x, x + 1) for x in cell]
+
+    cartesian_product = [[]]
+    for pool in diag_coord:
+        cartesian_product = [(x + [y]) for x in cartesian_product for y in pool]
+
+    result = []
+    for prod in cartesian_product:
+        result.append(tuple(prod))
+
+    result.remove(cell)
+    return result
 
 
 def compute_local_update(my_index, L):
@@ -64,9 +74,19 @@ def get_points(partition_index, L, floor=False):
 
 
 def assign_points_to_cluster(my_index, array_cells, labels, L):
+    """ Assigns to each point of the dataset the class label associated with the cell which contains such point
+        or sets it as an outlier if no such cell is been clustered.
 
+    :param my_index: int. index indicating the dataset file
+    :param array_cells: numpy.ndarray. Array of cells which have been clustered
+    :param labels: numpy.ndarray. Array of class labels, each associated with the corresponding cell (the cell in cells
+                    which has the same index)
+    :param L: int. Granularity of the grid
+    :return: points_to_return, labels_to_return.
+                points_to_return: numpy.ndarray. Array of points contained in the dataset
+                labels_to_return: numpy.ndarray. Array of labels, each associated to the point having the same index
+    """
     points = get_points(my_index, L, floor=False)
-    cells = get_points(my_index, L, floor=True)
 
     dense_cells = []
     for row in array_cells:
@@ -75,24 +95,21 @@ def assign_points_to_cluster(my_index, array_cells, labels, L):
     points_to_return = []
     labels_to_return = []
 
-    while len(cells) > 0:
-        actual_cell = cells.pop(0)
+    while len(points) > 0:
         actual_point = points.pop(0)
-        assigned = False
+        actual_cell = tuple(math.floor(actual_point[i] / L) for i in range(len(actual_point)))
         outlier = True
 
         if actual_cell in dense_cells:
             points_to_return.append(actual_point)
             labels_to_return.append(labels[dense_cells.index(actual_cell)])
-            assigned = True
-
-        if not assigned:
+        else:
             min_dist = float('inf')
             cluster_to_assign = -1
             check_list = get_all_neighbor(actual_cell)
             for check_cell in check_list:
                 if check_cell in dense_cells:
-                    cell_mid_point = ((check_cell[0] * L) + L/2, (check_cell[1] * L) + L/2)
+                    cell_mid_point = tuple(cell_coord * L + L/2 for cell_coord in check_cell)
                     actual_dist = distance.euclidean(actual_point, cell_mid_point)
                     if actual_dist < min_dist:
                         min_dist = actual_dist
@@ -106,9 +123,6 @@ def assign_points_to_cluster(my_index, array_cells, labels, L):
             else:
                 points_to_return.append(actual_point)
                 labels_to_return.append(cluster_to_assign)
-
-    #print(f'len: {len(points_to_return)}, points: {points_to_return}')
-    #print(f'len: {len(labels_to_return)}, points: {labels_to_return}')
 
     return np.array(points_to_return), np.array(labels_to_return)
 

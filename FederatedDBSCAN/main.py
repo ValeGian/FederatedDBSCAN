@@ -20,7 +20,7 @@ if __name__ == '__main__':
 
     #M = int(input("Insert the number of nodes: "))
     # print()
-    M = 3
+    M = 7
 
     # print('Choose the partitioning method:')
     # for (i, item) in enumerate(PARTITIONING_METHODS):
@@ -29,7 +29,7 @@ if __name__ == '__main__':
     # print()
     partitioning_method = 1
 
-    L = 0.02
+    L = 0.01
     MIN_PTS = 4
 
     arf = prt.partitionDataset(file, M, partitioning_method)
@@ -41,8 +41,8 @@ if __name__ == '__main__':
     #contribution_map = OrderedDict()
     contribution_map = {}
     for i in range(M):
-        localUpdate = lcl.compute_local_update(i, L)
-        for key, value in localUpdate.items():
+        local_update = lcl.compute_local_update(i, L)
+        for key, value in local_update.items():
             if key in contribution_map:
                 contribution_map[key] += value
             else:

@@ -3,16 +3,29 @@ from collections import OrderedDict
 
 
 def get_all_neighbor(cell):
-    (x, y) = cell
-    return [(x - 1, y), (x + 1, y), (x, y + 1), (x, y - 1), (x - 1, y + 1), (x + 1, y + 1), (x - 1, y - 1), (x + 1, y - 1)]
+    diag_coord = [(x - 1, x, x + 1) for x in cell]
+
+    cartesian_product = [[]]
+    for pool in diag_coord:
+        cartesian_product = [(x + [y]) for x in cartesian_product for y in pool]
+
+    result = []
+    for prod in cartesian_product:
+        result.append(tuple(prod))
+
+    result.remove(cell)
+    return result
 
 
 def compute_clusters(contribution_map, MIN_PTS) -> (np.ndarray, np.ndarray):
     """ Computes clusters exploting a variant of DBSCAN
 
     :param contribution_map: dict. Map containing couples (cell coords) -> # of points in cell
-    :param MIN_PTS: int
-    :return:
+    :param MIN_PTS: int.
+    :return: cells, labels.
+                cells: numpy.ndarray. Array of cells which have been clustered
+                labels: numpy.ndarray. Array of class labels, each associated with the corresponding cell (the cell in
+                        cells which has the same index)
     """
     key_list = list(contribution_map.keys())
     value_list = list(contribution_map.values())
@@ -20,7 +33,6 @@ def compute_clusters(contribution_map, MIN_PTS) -> (np.ndarray, np.ndarray):
     n_dense_cell = len(key_list)
     visited = np.zeros(n_dense_cell)
     clustered = np.zeros(n_dense_cell)
-    noise = []
     cells = []
     labels = []
     cluster_ID = 0
@@ -48,13 +60,5 @@ def compute_clusters(contribution_map, MIN_PTS) -> (np.ndarray, np.ndarray):
                         labels.append(cluster_ID)
                         clustered[neighbor_index] = 1
             cluster_ID += 1
-        else:
-            noise.append(curr_index)
-
-    for noise_cell_index in noise:
-        if clustered[noise_cell_index] == 0:
-            unvisited_cell = key_list[noise_cell_index]
-            cells.append(unvisited_cell)
-            labels.append(-1) # -1 for outliers
             
     return np.array(cells), np.array(labels)
