@@ -11,8 +11,16 @@ def get_all_neighbor(cell):
     return [(x - 1, y), (x + 1, y), (x, y + 1), (x, y - 1), (x - 1, y + 1), (x + 1, y + 1), (x - 1, y - 1), (x + 1, y - 1)]
 
 
-def get_local_points(my_index, L):
-    arr_points = np.array(get_points(my_index, L))
+def compute_local_update(my_index, L):
+    """ Computes the local updates with a specific grid granularity and returns a mapping of the computed cells
+        associated with the number of points in each cell
+
+    :param my_index: int. Index of the partition file to read from
+    :param L: float. Grid's granularity
+    :return: dict. Map containing couples (cell coords) -> # of points in cell
+                Example of return: {(9, 27): 2.0, (9, 29): 3.0, (9, 30): 1.0}
+    """
+    arr_points = np.array(get_points(my_index, L, floor=True))
 
     max_x = np.amax(arr_points[:, 0])
     min_x = np.amin(arr_points[:, 0])
@@ -32,16 +40,17 @@ def get_local_points(my_index, L):
     for x, y in arr_points:
         count_matrix[x + x_shift][y + y_shift] += 1
 
-    dict_to_return = OrderedDict()
+    #dict_to_return = OrderedDict()
+    dict_to_return = {}
     for x in range(max_x + 1 + x_shift):
         for y in range(max_y + 1 + y_shift):
-            if count_matrix[x][y] >= 1:
+            if count_matrix[x][y] > 0:
                 dict_to_return[(x - x_shift, y - y_shift)] = count_matrix[x][y]
 
     return dict_to_return
 
 
-def get_points(partition_index, L, floor=True):
+def get_points(partition_index, L, floor=False):
     data, meta = arff.loadpartition(partition_index)
     dimension = len(data[0]) - 1
     points = []
@@ -57,7 +66,7 @@ def get_points(partition_index, L, floor=True):
 def assign_points_to_cluster(my_index, array_cells, labels, L):
 
     points = get_points(my_index, L, floor=False)
-    cells = get_points(my_index, L)
+    cells = get_points(my_index, L, floor=True)
 
     dense_cells = []
     for row in array_cells:
@@ -105,4 +114,4 @@ def assign_points_to_cluster(my_index, array_cells, labels, L):
 
 
 if __name__ == '__main__':
-    print(get_local_points(0))
+    print(compute_local_update(0))

@@ -6,9 +6,19 @@ import pandas as pd
 import arffutils as arff
 
 PARTITIONS_PATH = "./partitions/"
-PARTITIONING_METHODS = ["stratified", "separated", "partially_separated"]
+PARTITIONING_METHODS = ["stratified", "separated"]
 
-def partitionDataset(file, M = 1, partitioning_method = 0):
+
+def partitionDataset(file, M=1, partitioning_method=0):
+    """ Partitions the dataset and saves each partition in a file
+
+    :param file: str. Filename to open
+    :param M: int. Number of partitions to create
+    :param partitioning_method: int
+    :return: data, meta
+        data: record array. The data of the arff file, accessible by attribute names
+        meta: MetaData. Contains information about the arff file such as name and type of attributes, the relation (name of the dataset), etc.
+    """
     removePartitions()
 
     data, meta = arff.loadarff(file)
@@ -18,7 +28,7 @@ def partitionDataset(file, M = 1, partitioning_method = 0):
         rng.shuffle(data)
         for i in range(M):
             lowerB = i * data.size // M
-            upperB = (i+1) * data.size // M
+            upperB = (i + 1) * data.size // M
             df = pd.DataFrame(data[lowerB:upperB])
             arff.dumpArff(df, i)
     elif partitioning_method == 1:
@@ -35,7 +45,7 @@ def partitionDataset(file, M = 1, partitioning_method = 0):
             for i in range(N):
                 for j in range(sub[i]):
                     lowerB = j * len(separatedL[i]) // sub[i]
-                    upperB = (j+1) * len(separatedL[i]) // sub[i]
+                    upperB = (j + 1) * len(separatedL[i]) // sub[i]
                     arr = np.array(separatedL[i][lowerB:upperB])
                     df = pd.DataFrame(arr)
                     arff.dumpArff(df, count)
@@ -48,18 +58,17 @@ def partitionDataset(file, M = 1, partitioning_method = 0):
                 upperB = (i + 1) * data.size // M
                 df = pd.DataFrame(data[lowerB:upperB])
                 arff.dumpArff(df, i)
-    #elif partitioningIndex == 2:
-    #    i = 2
-    #else:
-    #    i = 3
+
     return data, meta
+
 
 def removePartitions():
     for file in os.listdir(PARTITIONS_PATH):
         os.remove(f'{PARTITIONS_PATH}{file}')
 
+
 def obtainSubdivision(num_class, num_node):
-    arr_to_return = np.full(num_class, math.floor(num_node/num_class))
+    arr_to_return = np.full(num_class, math.floor(num_node / num_class))
     for i in range(num_node % num_class):
         arr_to_return[i] += 1
     return arr_to_return

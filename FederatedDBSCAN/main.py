@@ -38,9 +38,10 @@ if __name__ == '__main__':
     #    points, labels = arff.loadpartitionNDArray(i)
     #    plt.plot2Dcluster(points, labels)
 
-    contribution_map = OrderedDict()
+    #contribution_map = OrderedDict()
+    contribution_map = {}
     for i in range(M):
-        localUpdate = lcl.get_local_points(i, L)
+        localUpdate = lcl.compute_local_update(i, L)
         for key, value in localUpdate.items():
             if key in contribution_map:
                 contribution_map[key] += value
