@@ -21,45 +21,6 @@ def get_all_neighbor(cell):
     return result
 
 
-def compute_local_update(my_index, L):
-    """ Computes the local updates with a specific grid granularity and returns a mapping of the computed cells
-        associated with the number of points in each cell
-
-    :param my_index: int. Index of the partition file to read from
-    :param L: float. Grid's granularity
-    :return: dict. Map containing couples (cell coords) -> # of points in cell
-                Example of return: {(9, 27): 2.0, (9, 29): 3.0, (9, 30): 1.0}
-    """
-    arr_points = np.array(get_points(my_index, L, floor=True))
-
-    max_x = np.amax(arr_points[:, 0])
-    min_x = np.amin(arr_points[:, 0])
-    max_y = np.amax(arr_points[:, 1])
-    min_y = np.amin(arr_points[:, 1])
-
-    x_shift = 0
-    if min_x < 0:
-        x_shift = -1 * min_x
-
-    y_shift = 0
-    if min_y < 0:
-        y_shift = -1 * min_y
-
-    count_matrix = np.zeros((max_x + 1 + x_shift, max_y + 1 + y_shift))
-
-    for x, y in arr_points:
-        count_matrix[x + x_shift][y + y_shift] += 1
-
-    #dict_to_return = OrderedDict()
-    dict_to_return = {}
-    for x in range(max_x + 1 + x_shift):
-        for y in range(max_y + 1 + y_shift):
-            if count_matrix[x][y] > 0:
-                dict_to_return[(x - x_shift, y - y_shift)] = count_matrix[x][y]
-
-    return dict_to_return
-
-
 def get_points(partition_index, L, floor=False):
     data, meta = arff.loadpartition(partition_index)
     dimension = len(data[0]) - 1
@@ -69,8 +30,70 @@ def get_points(partition_index, L, floor=False):
             points.append(tuple(math.floor(row[i] / L) for i in range(dimension)))
         else:
             points.append(tuple(row[i] for i in range(dimension)))
-
     return points
+
+
+def compute_local_update(my_index, L):
+    """ Computes the local updates with a specific grid granularity and returns a mapping of the computed cells
+        associated with the number of points in each cell
+
+    :param my_index: int. Index of the partition file to read from
+    :param L: float. Grid's granularity
+    :return: dict. Map containing couples (cell coords) -> # of points in cell
+                Example of return: {(9, 27): 2.0, (9, 29): 3.0, (9, 30): 1.0}
+    """
+    cells = np.array(get_points(my_index, L, floor=True))
+    #print(len(cells))
+    dimensions = len(cells[0])
+
+    max_cell_coords = []
+    min_cell_coords = []
+    for i in range(dimensions):
+        max_cell_coords.append(np.amax(cells[:, i]))
+        min_cell_coords.append(np.amin(cells[:, i]))
+
+    shifts = np.zeros(dimensions)
+    for i in range(dimensions):
+        if min_cell_coords[i] < 0:
+            shifts[i] = -1 * min_cell_coords[i]
+
+    shifted_dimensions = ()
+    for i in range(dimensions):
+        shifted_dimensions += (int(max_cell_coords[i] + 1 + shifts[i]), )
+
+    count_matrix = np.zeros(shifted_dimensions)
+    for cell in cells:
+        shifted_cell_coords = ()
+        for i in range(dimensions):
+            shifted_cell_coords += (int(cell[i] + shifts[i]),)
+        count_matrix[shifted_cell_coords] += 1
+
+    non_zero = np.where(count_matrix > 0)
+    non_zero_indexes = []
+    for i in range(len(non_zero)):
+        for j in range(len(non_zero[i])):
+            if i == 0:
+                non_zero_indexes.append((int(non_zero[i][j]), ))
+            else:
+                non_zero_indexes[j] += (int(non_zero[i][j]), )
+
+    #dict_to_return = OrderedDict()
+    dict_to_return = {}
+    for index in non_zero_indexes:
+        if count_matrix[index] > 0:
+            #print(f'Shifts: {shifts} -> Index: {index}')
+            shifted_index = ()
+            for i in range(len(index)):
+                shifted_index += (int(index[i] - shifts[i]), )
+            #print(f'Shifted: {shifted_index}')
+            dict_to_return[shifted_index] = count_matrix[index]
+
+    #for x in range(max_x + 1 + x_shift):
+    #    for y in range(max_y + 1 + y_shift):
+    #        if count_matrix[x][y] > 0:
+    #            dict_to_return[(x - x_shift, y - y_shift)] = count_matrix[x][y]
+
+    return dict_to_return
 
 
 def assign_points_to_cluster(my_index, array_cells, labels, L):

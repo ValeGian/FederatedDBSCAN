@@ -29,10 +29,11 @@ if __name__ == '__main__':
     # print()
     partitioning_method = 1
 
-    L = 0.01
+    L = 0.02
     MIN_PTS = 4
 
     arf = prt.partitionDataset(file, M, partitioning_method)
+    dimensions = len(arf[0][0]) - 1
 
     #for i in range(M):
     #    points, labels = arff.loadpartitionNDArray(i)
@@ -63,7 +64,7 @@ if __name__ == '__main__':
             elaborated_points = np.concatenate((elaborated_points, local_points), axis=0)
             elaborated_labels = np.concatenate((elaborated_labels, local_labels), axis=0)
         #plt.plot2Dcluster(local_points, local_labels)
-    plt.plot2Dcluster(elaborated_points, elaborated_labels, message="Federated")
+    plt.plotCluster(elaborated_points, elaborated_labels, message="Federated")
 
     '''EVALUATION'''
     ### FEDERATED ###
@@ -76,9 +77,9 @@ if __name__ == '__main__':
     ### DBSCAN ###
     Tpoints, Tlabels = arff.loadarffNDArray(file)
     predicted_labels = cltr.dbscan(Tpoints, eps=L / 2, min_pts=MIN_PTS)
-    plt.plot2Dcluster(Tpoints, predicted_labels, message="DBSCAN")
+    plt.plotCluster(Tpoints, predicted_labels, message="DBSCAN")
 
-    plt.plot2Dcluster(Tpoints, Tlabels, message="Original")
+    plt.plotCluster(Tpoints, Tlabels, message="Original")
 
     print(f'DBSCAN\t\t>>\t'
           f'PURITY: {cltr.PURITY_score(Tlabels, predicted_labels):.4f}\t-\t'
