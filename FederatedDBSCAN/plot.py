@@ -4,6 +4,10 @@ import matplotlib.cm as cm
 import numpy as np
 import warnings
 
+
+markers = ["o", "s", "v", "^", "<", ">", "p", "P", "*", "H", "X", "D", "1", "+"]
+
+
 def plotGridMap(contributionMap):
     maxX = max([cord[0] for cord in contributionMap.keys()])
     minX = min([cord[0] for cord in contributionMap.keys()])
@@ -80,7 +84,87 @@ def plot3Dcluster(points: np.ndarray, labels:np.ndarray, message="", marker="o")
     plt.show()
 
 
+def plot_curves(curves, MValues, y_message):
+    for i in range(len(curves)):
+        plt.plot(curves[i][0], curves[i][1], label=f'MinPts = {MValues[i]}', marker=markers[i])
+
+    plt.xlabel('L')
+    plt.ylabel(y_message)
+
+    plt.legend()
+    plt.show()
+
+
 if __name__ == '__main__':
-    points = np.array([[1, 1], [2, 4], [3, 5], [2, 2]])
-    labels = np.array([1, 0, 0, -1])
-    plot2Dcluster(points, labels)
+    x1 = [10, 20, 30]
+    y1 = [20, 40, 10]
+    curve1 = []
+    curve1.append(x1)
+    curve1.append(y1)
+
+    x2 = [10, 20, 30]
+    y2 = [40, 10, 30]
+    curve2 = []
+    curve2.append(x2)
+    curve2.append(y2)
+
+    x3 = [10, 20, 30]
+    y3 = [10, 20, 30]
+    curve3 = []
+    curve3.append(x3)
+    curve3.append(y3)
+
+    metric1_curves = []
+    metric1_curves.append(curve1)
+    metric1_curves.append(curve2)
+    metric1_curves.append(curve3)
+
+    x1 = [10, 20, 30]
+    y1 = [20, 40, 10]
+    curve1 = []
+    curve1.append(x1)
+    curve1.append(y1)
+
+    x2 = [10, 20, 30]
+    y2 = [40, 10, 30]
+    curve2 = []
+    curve2.append(x2)
+    curve2.append(y2)
+
+    x3 = [10, 20, 30]
+    y3 = [10, 20, 30]
+    curve3 = []
+    curve3.append(x3)
+    curve3.append(y3)
+
+    metric2_curves = []
+    metric2_curves.append(curve1)
+    metric2_curves.append(curve2)
+    metric2_curves.append(curve3)
+
+    x1 = [10, 20, 30]
+    y1 = [20, 40, 10]
+    curve1 = []
+    curve1.append(x1)
+    curve1.append(y1)
+
+    x2 = [10, 20, 30]
+    y2 = [40, 10, 30]
+    curve2 = []
+    curve2.append(x2)
+    curve2.append(y2)
+
+    x3 = [10, 20, 30]
+    y3 = [10, 20, 30]
+    curve3 = []
+    curve3.append(x3)
+    curve3.append(y3)
+
+    metric3_curves = []
+    metric3_curves.append(curve1)
+    metric3_curves.append(curve2)
+    metric3_curves.append(curve3)
+
+    plot_curves(metric1_curves, [3, 4, 6], "PURITY")
+    plot_curves(metric2_curves, [3, 4, 6], "AMI")
+    plot_curves(metric3_curves, [3, 4, 6], "ARI")

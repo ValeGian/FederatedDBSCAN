@@ -6,29 +6,18 @@ import local as lcl
 import server as srv
 
 import numpy as np
-import os
 
 DATASETS_PATH = "./datasets/"
 
 if __name__ == '__main__':
-    #print(f'Choose the dataset to be partitioned:\n{os.listdir(DATASETS_PATH)}')
-    #file = DATASETS_PATH + input()
-    #print()
     file = "banana.arff"
 
-    #M = int(input("Insert the number of nodes: "))
-    # print()
     M = 3
 
-    # print('Choose the partitioning method:')
-    # for (i, item) in enumerate(PARTITIONING_METHODS):
-    # print(f'{i} -> {item}')
-    # partitioningMethod = input();
-    # print()
     partitioning_method = 0
 
-    L = 0.02
-    MIN_PTS = 4
+    L = 0.05
+    MIN_PTS = 2
 
     arf = prt.partitionDataset(file, M, partitioning_method)
     dimensions = len(arf[0][0]) - 1
@@ -46,7 +35,6 @@ if __name__ == '__main__':
             else:
                 contribution_map[key] = value
 
-    #plt.plotGridMap(contribution_map)
     cells, cell_labels = srv.compute_clusters(contribution_map, MIN_PTS)
     plt.plotCluster(cells, cell_labels, message="Cells Plot", marker="s")
 
