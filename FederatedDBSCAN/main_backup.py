@@ -31,7 +31,11 @@ def create_metric_table(metric_values, column_list, name, file):
     t.auto_set_font_size(False)
     t.set_fontsize(8)
     fig.tight_layout()
-    plott.savefig(f'table_{name}_{file}.png')
+
+    if not os.path.exists(file[:-5]):
+        os.makedirs(file[:-5])
+
+    plott.savefig(f'{file[:-5]}/table_{name}.png')
     #plott.show()
 
 
@@ -92,15 +96,15 @@ def execute_federated(M, L, MIN_PTS):
 
 if __name__ == '__main__':
 
-    file = "banana.arff"
+    file = "cluto-t8-8k.arff"
     M = 2
     partitioning_method = 1
 
     arf = prt.partitionDataset(file, M, partitioning_method)
     dimensions = len(arf[0][0]) - 1
 
-    range_L = (2, 5, 0.5)
-    range_minPts = (2, 6)
+    range_L = (1200, 1600, 50)
+    range_minPts = (4, 8)
     MIN_PTS_list = ["L\MinPTs"]
 
     rows = int(((range_L[1] - range_L[0]) * range_L[2] ** -1))
@@ -114,6 +118,10 @@ if __name__ == '__main__':
     AMI_values_db = np.zeros((rows, cols))
     ARI_values = np.zeros((rows, cols))
     ARI_values_db = np.zeros((rows, cols))
+    num_clusters = np.zeros((rows, cols))
+    num_outliers = np.zeros((rows, cols))
+    num_clusters_db = np.zeros((rows, cols))
+    num_outliers_db = np.zeros((rows, cols))
 
     Tpoints, Tlabels = arff.arffToNDArray(arf)
     Tpoints_db, Tlabels_db = arff.loadarffNDArray(file)
@@ -121,7 +129,7 @@ if __name__ == '__main__':
     first_iteration = True
     i, j = 0, 1
     for L in np.arange(range_L[0], range_L[1], range_L[2]) / 100:
-        PURITY_values[i][0] = PURITY_values_db[i][0] = AMI_values[i][0] = AMI_values_db[i][0] = ARI_values[i][0] = ARI_values_db[i][0] = L
+        PURITY_values[i][0] = PURITY_values_db[i][0] = AMI_values[i][0] = AMI_values_db[i][0] = ARI_values[i][0] = ARI_values_db[i][0] = num_outliers[i][0] = num_clusters[i][0] = num_outliers_db[i][0] = num_clusters_db[i][0] = L
         for MinPts in range(range_minPts[0], range_minPts[1]):
             if first_iteration:
                 MIN_PTS_list.append(MinPts)
@@ -131,12 +139,17 @@ if __name__ == '__main__':
             PURITY_values[i][j] = truncate(cltr.PURITY_score(Tlabels, federated_labels), 4)
             AMI_values[i][j] = truncate(cltr.AMI_score(Tlabels, federated_labels), 4)
             ARI_values[i][j] = truncate(cltr.ARI_score(Tlabels, federated_labels), 4)
+            num_clusters[i][j] = cltr.compute_clusters(federated_labels)
+            num_outliers[i][j] = cltr.num_outliers(federated_labels)
 
             dbscan_labels = cltr.dbscan(Tpoints_db, eps=L / 2, min_pts=MinPts)
 
             PURITY_values_db[i][j] = truncate(cltr.PURITY_score(Tlabels_db, dbscan_labels), 4)
             AMI_values_db[i][j] = truncate(cltr.AMI_score(Tlabels_db, dbscan_labels), 4)
             ARI_values_db[i][j] = truncate(cltr.ARI_score(Tlabels_db, dbscan_labels), 4)
+            num_clusters_db[i][j] = cltr.compute_clusters(dbscan_labels)
+            num_outliers_db[i][j] = cltr.num_outliers(dbscan_labels)
+
             j += 1
 
         j = 1
@@ -144,10 +157,14 @@ if __name__ == '__main__':
         if first_iteration:
             first_iteration = False
 
-    print(PURITY_values_db)
     create_metric_table(PURITY_values, MIN_PTS_list, "PURITY_values", file)
     create_metric_table(AMI_values, MIN_PTS_list, "AMI_values", file)
     create_metric_table(ARI_values, MIN_PTS_list, "ARI_values", file)
+    create_metric_table(num_clusters, MIN_PTS_list, "clusters_values", file)
+    create_metric_table(num_outliers, MIN_PTS_list, "outliers_values", file)
+
     create_metric_table(PURITY_values_db, MIN_PTS_list, "PURITY_values_db", file)
     create_metric_table(AMI_values_db, MIN_PTS_list, "AMI_values_db", file)
     create_metric_table(ARI_values_db, MIN_PTS_list, "ARI_values_db", file)
+    create_metric_table(num_clusters_db, MIN_PTS_list, "clusters_values_db", file)
+    create_metric_table(num_outliers_db, MIN_PTS_list, "outliers_values_db", file)
