@@ -1,5 +1,3 @@
-from collections import OrderedDict
-
 import clustering as cltr
 import arffutils as arff
 import plot as plt
@@ -20,14 +18,14 @@ if __name__ == '__main__':
 
     #M = int(input("Insert the number of nodes: "))
     # print()
-    M = 7
+    M = 3
 
     # print('Choose the partitioning method:')
     # for (i, item) in enumerate(PARTITIONING_METHODS):
     # print(f'{i} -> {item}')
     # partitioningMethod = input();
     # print()
-    partitioning_method = 1
+    partitioning_method = 0
 
     L = 0.02
     MIN_PTS = 4
@@ -37,9 +35,8 @@ if __name__ == '__main__':
 
     #for i in range(M):
     #    points, labels = arff.loadpartitionNDArray(i)
-    #    plt.plot2Dcluster(points, labels)
+    #    plt.plotCluster(points, labels, message=f'Partition {i}')
 
-    #contribution_map = OrderedDict()
     contribution_map = {}
     for i in range(M):
         local_update = lcl.compute_local_update(i, L)
@@ -51,7 +48,7 @@ if __name__ == '__main__':
 
     #plt.plotGridMap(contribution_map)
     cells, cell_labels = srv.compute_clusters(contribution_map, MIN_PTS)
-    #plt.plot2Dcluster(cells, cell_labels)
+    plt.plotCluster(cells, cell_labels, message="Cells Plot", marker="s")
 
     elaborated_points = []
     elaborated_labels = []
@@ -73,6 +70,8 @@ if __name__ == '__main__':
           f'PURITY: {cltr.PURITY_score(Tlabels, elaborated_labels):.4f}\t-\t'
           f'ARI: {cltr.ARI_score(Tlabels, elaborated_labels):.4f}\t-\t'
           f'AMI: {cltr.AMI_score(Tlabels, elaborated_labels):.4f}')
+          #f'BCubed PRECISION: {cltr.BCubed_Precision_score(Tlabels, elaborated_labels):.4f}\t-\t'
+          #f'BCubed RECALL: {cltr.BCubed_Recall_score(Tlabels, elaborated_labels):.4f}')
 
     ### DBSCAN ###
     Tpoints, Tlabels = arff.loadarffNDArray(file)
@@ -84,7 +83,9 @@ if __name__ == '__main__':
     print(f'DBSCAN\t\t>>\t'
           f'PURITY: {cltr.PURITY_score(Tlabels, predicted_labels):.4f}\t-\t'
           f'ARI: {cltr.ARI_score(Tlabels, predicted_labels):.4f}\t-\t'
-          f'AMI: {cltr.AMI_score(Tlabels, predicted_labels):.4f}')
+          f'AMI: {cltr.AMI_score(Tlabels, predicted_labels):.4f}\t-\t')
+          #f'BCubed PRECISION: {cltr.BCubed_Precision_score(Tlabels, predicted_labels):.4f}\t-\t'
+          #f'BCubed RECALL: {cltr.BCubed_Recall_score(Tlabels, predicted_labels):.4f}')
 '''
     for L in np.arange(1, 8, 0.5)/100:
         MinPts = 4
@@ -95,7 +96,7 @@ if __name__ == '__main__':
         plt.plot2Dcluster(points, predicted_labels)
 
         print(f'L: {L:.3f}:\t-\t'
-              f'AMI: {cltr.PURITY_score(labels, predicted_labels):.4f}\t-\t'
+              f'PURITY: {cltr.PURITY_score(labels, predicted_labels):.4f}\t-\t'
               f'ARI: {cltr.ARI_score(labels, predicted_labels):.4f}\t-\t'
               f'AMI: {cltr.AMI_score(labels, predicted_labels):.4f}')
 

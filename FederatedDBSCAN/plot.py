@@ -27,15 +27,15 @@ def plotGridMap(contributionMap):
     plt.show()
 
 
-def plotCluster(points: np.ndarray, labels:np.ndarray, message=""):
+def plotCluster(points: np.ndarray, labels: np.ndarray, message="", marker="o"):
     dimensions = len(points[0])
     if dimensions == 2:
-        plot2Dcluster(points, labels, message)
+        plot2Dcluster(points, labels, message, marker)
     elif dimensions == 3:
-        plot3Dcluster(points, labels, message)
+        plot3Dcluster(points, labels, message, marker)
 
 
-def plot2Dcluster(points: np.ndarray, labels:np.ndarray, message=""):
+def plot2Dcluster(points: np.ndarray, labels:np.ndarray, message="", marker="o"):
     color_range = cm.rainbow(np.linspace(0, 1, np.max(np.unique(labels))+1))
     colors = []
     count_outliers = 0
@@ -47,7 +47,7 @@ def plot2Dcluster(points: np.ndarray, labels:np.ndarray, message=""):
         else:
             colors.append(color_range[label])
 
-    plt.scatter(points[:, 0], points[:, 1], color=colors)
+    plt.scatter(points[:, 0], points[:, 1], color=colors, marker=marker)
     plt.title(f'{message} - '
               f'{len(labels)} Points - '
               f'{len(np.unique(labels)) - (1 if count_outliers > 0 else 0)} Clusters - '
@@ -55,7 +55,7 @@ def plot2Dcluster(points: np.ndarray, labels:np.ndarray, message=""):
     plt.show()
 
 
-def plot3Dcluster(points: np.ndarray, labels:np.ndarray, message=""):
+def plot3Dcluster(points: np.ndarray, labels:np.ndarray, message="", marker="o"):
     warnings.filterwarnings("ignore")
     color_range = cm.rainbow(np.linspace(0, 1, np.max(np.unique(labels)) + 1))
     colors = []
@@ -71,7 +71,7 @@ def plot3Dcluster(points: np.ndarray, labels:np.ndarray, message=""):
     fig = plt.figure()
     ax = Axes3D(fig)
 
-    ax.scatter(points[:, 0], points[:, 1], points[:, 2], c=colors)
+    ax.scatter(points[:, 0], points[:, 1], points[:, 2], c=colors, marker=marker)
 
     print(f'{message} - '
           f'{len(labels)} Points - '

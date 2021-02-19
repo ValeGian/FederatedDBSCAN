@@ -3,10 +3,8 @@ from scipy.spatial import distance
 import math
 import arffutils as arff
 
-from collections import OrderedDict
 
-
-def get_all_neighbor(cell):
+def get_all_neighbor(cell, get_corners=False):
     diag_coord = [(x - 1, x, x + 1) for x in cell]
 
     cartesian_product = [[]]
@@ -15,9 +13,19 @@ def get_all_neighbor(cell):
 
     result = []
     for prod in cartesian_product:
-        result.append(tuple(prod))
+        if get_corners == True:
+            result.append(tuple(prod))
+        else:
+            differential_coord = 0
+            for i in range(len(prod)):
+                if prod[i] != cell[i]:
+                    differential_coord += 1
+            if differential_coord == 1:
+                result.append(tuple(prod))
 
-    result.remove(cell)
+    if get_corners == True:
+        result.remove(cell) # remove the cell itself
+
     return result
 
 
@@ -77,21 +85,13 @@ def compute_local_update(my_index, L):
             else:
                 non_zero_indexes[j] += (int(non_zero[i][j]), )
 
-    #dict_to_return = OrderedDict()
     dict_to_return = {}
     for index in non_zero_indexes:
         if count_matrix[index] > 0:
-            #print(f'Shifts: {shifts} -> Index: {index}')
             shifted_index = ()
             for i in range(len(index)):
                 shifted_index += (int(index[i] - shifts[i]), )
-            #print(f'Shifted: {shifted_index}')
             dict_to_return[shifted_index] = count_matrix[index]
-
-    #for x in range(max_x + 1 + x_shift):
-    #    for y in range(max_y + 1 + y_shift):
-    #        if count_matrix[x][y] > 0:
-    #            dict_to_return[(x - x_shift, y - y_shift)] = count_matrix[x][y]
 
     return dict_to_return
 

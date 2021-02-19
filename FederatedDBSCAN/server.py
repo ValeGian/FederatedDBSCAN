@@ -1,8 +1,7 @@
 import numpy as np
-from collections import OrderedDict
 
 
-def get_all_neighbor(cell):
+def get_all_neighbor(cell, get_corners=False):
     diag_coord = [(x - 1, x, x + 1) for x in cell]
 
     cartesian_product = [[]]
@@ -11,13 +10,23 @@ def get_all_neighbor(cell):
 
     result = []
     for prod in cartesian_product:
-        result.append(tuple(prod))
+        if get_corners == True:
+            result.append(tuple(prod))
+        else:
+            differential_coord = 0
+            for i in range(len(prod)):
+                if prod[i] != cell[i]:
+                    differential_coord += 1
+            if differential_coord == 1:
+                result.append(tuple(prod))
 
-    result.remove(cell)
+    if get_corners == True:
+        result.remove(cell) # remove the cell itself
+
     return result
 
 
-def compute_clusters(contribution_map, MIN_PTS) -> (np.ndarray, np.ndarray):
+def compute_clusters(contribution_map, MIN_PTS):
     """ Computes clusters exploting a variant of DBSCAN
 
     :param contribution_map: dict. Map containing couples (cell coords) -> # of points in cell
