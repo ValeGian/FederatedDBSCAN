@@ -84,11 +84,11 @@ def plot3Dcluster(points: np.ndarray, labels:np.ndarray, message="", marker="o")
     plt.show()
 
 
-def plot_curves(curves, MValues, y_message):
+def plot_curves(curves, MValues, x_message, y_message):
     for i in range(len(curves)):
         plt.plot(curves[i][0], curves[i][1], label=f'MinPts = {MValues[i]}', marker=markers[i])
 
-    plt.xlabel('L')
+    plt.xlabel(x_message)
     plt.ylabel(y_message)
 
     plt.legend()
@@ -165,6 +165,6 @@ if __name__ == '__main__':
     metric3_curves.append(curve2)
     metric3_curves.append(curve3)
 
-    plot_curves(metric1_curves, [3, 4, 6], "PURITY")
-    plot_curves(metric2_curves, [3, 4, 6], "AMI")
-    plot_curves(metric3_curves, [3, 4, 6], "ARI")
+    plot_curves(metric1_curves, [3, 4, 6], "L", "PURITY")
+    plot_curves(metric2_curves, [3, 4, 6], "L", "AMI")
+    plot_curves(metric3_curves, [3, 4, 6], "EPSI", "ARI")
