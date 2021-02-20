@@ -91,7 +91,7 @@ def plot_curves(curves, MValues, x_message, y_message):
     plt.xlabel(x_message)
     plt.ylabel(y_message)
 
-    plt.legend()
+    plt.legend(bbox_to_anchor=(1.04,1), loc="upper left")
     plt.show()
 
 
