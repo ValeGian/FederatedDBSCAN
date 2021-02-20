@@ -1,9 +1,5 @@
-from collections import OrderedDict
-
 import clustering as cltr
 import arffutils as arff
-from random import random
-from pandas.plotting import table
 import plot as plt
 import matplotlib.pyplot as plott
 import partition as prt
@@ -101,8 +97,8 @@ if __name__ == '__main__':
     arf = prt.partitionDataset(file, M, partitioning_method)
     dimensions = len(arf[0][0]) - 1
 
-    range_L = (1, 3, 0.5)
-    range_minPts = (2, 4)
+    range_L = (1, 5, 0.5)
+    range_minPts = (2, 6)
     L_list = ["L\MinPTs"]
 
     cols = int(((range_L[1] - range_L[0]) * range_L[2] ** -1)) + 1
@@ -130,10 +126,12 @@ if __name__ == '__main__':
     fd_c_purities = []
     fd_c_amis = []
     fd_c_aris = []
+    fd_c_num_clusters = []
 
     db_c_purities = []
     db_c_amis = []
     db_c_aris = []
+    db_c_num_clusters = []
 
     for MinPts in range(range_minPts[0], range_minPts[1]):
 
@@ -143,10 +141,12 @@ if __name__ == '__main__':
         fd_purities = []
         fd_amis = []
         fd_aris = []
+        fd_num_clusters = []
 
         db_purities = []
         db_amis = []
         db_aris = []
+        db_num_clusters = []
 
         for L in np.arange(range_L[0], range_L[1], range_L[2]) / 100:
             l_values.append(L)
@@ -164,6 +164,7 @@ if __name__ == '__main__':
             fd_purities.append(purity)
             fd_amis.append(ami)
             fd_aris.append(ari)
+            fd_num_clusters.append(cltr.compute_clusters(federated_labels))
 
             PURITY_values[i][j] = truncate(purity, 4)
             AMI_values[i][j] = truncate(ami, 4)
@@ -180,6 +181,7 @@ if __name__ == '__main__':
             db_purities.append(purity)
             db_amis.append(ami)
             db_aris.append(ari)
+            db_num_clusters.append(cltr.compute_clusters(dbscan_labels))
 
             PURITY_values_db[i][j] = truncate(purity, 4)
             AMI_values_db[i][j] = truncate(ami, 4)
@@ -197,28 +199,32 @@ if __name__ == '__main__':
         fd_c_purities.append([l_values, fd_purities])
         fd_c_amis.append([l_values, fd_amis])
         fd_c_aris.append([l_values, fd_aris])
+        fd_c_num_clusters.append([l_values, fd_num_clusters])
 
         l_values = [l_value/2 for l_value in l_values]
         db_c_purities.append([l_values, db_purities])
         db_c_amis.append([l_values, db_amis])
         db_c_aris.append([l_values, db_aris])
+        db_c_num_clusters.append([l_values, db_num_clusters])
 
-    plt.plot_curves(fd_c_purities, min_pts_values, "L", "PURITY")
-    plt.plot_curves(fd_c_amis, min_pts_values, "L", "AMI")
-    plt.plot_curves(fd_c_aris, min_pts_values, "L", "ARI")
+    plt.plot_curves(fd_c_purities, min_pts_values, "L", "PURITY", file)
+    plt.plot_curves(fd_c_amis, min_pts_values, "L", "AMI", file)
+    plt.plot_curves(fd_c_aris, min_pts_values, "L", "ARI", file)
+    plt.plot_curves(fd_c_num_clusters, min_pts_values, "L", "#Clusters", file)
 
-    plt.plot_curves(db_c_purities, min_pts_values, "EPSI", "PURITY")
-    plt.plot_curves(db_c_amis, min_pts_values, "EPSI", "AMI")
-    plt.plot_curves(db_c_aris, min_pts_values, "EPSI", "ARI")
+    plt.plot_curves(db_c_purities, min_pts_values, "Eps", "PURITY", file)
+    plt.plot_curves(db_c_amis, min_pts_values, "Eps", "AMI", file)
+    plt.plot_curves(db_c_aris, min_pts_values, "Eps", "ARI", file)
+    plt.plot_curves(db_c_num_clusters, min_pts_values, "Eps", "#Clusters", file)
 
-    create_metric_table(PURITY_values, L_list, "PURITY_values", file)
-    create_metric_table(AMI_values, L_list, "AMI_values", file)
-    create_metric_table(ARI_values, L_list, "ARI_values", file)
-    create_metric_table(num_clusters, L_list, "clusters_values", file)
-    create_metric_table(num_outliers, L_list, "outliers_values", file)
-
-    create_metric_table(PURITY_values_db, L_list, "PURITY_values_db", file)
-    create_metric_table(AMI_values_db, L_list, "AMI_values_db", file)
-    create_metric_table(ARI_values_db, L_list, "ARI_values_db", file)
-    create_metric_table(num_clusters_db, L_list, "clusters_values_db", file)
-    create_metric_table(num_outliers_db, L_list, "outliers_values_db", file)
+    #create_metric_table(PURITY_values, L_list, "PURITY_values", file)
+    #create_metric_table(AMI_values, L_list, "AMI_values", file)
+    #create_metric_table(ARI_values, L_list, "ARI_values", file)
+    #create_metric_table(num_clusters, L_list, "clusters_values", file)
+    #create_metric_table(num_outliers, L_list, "outliers_values", file)
+#
+    #create_metric_table(PURITY_values_db, L_list, "PURITY_values_db", file)
+    #create_metric_table(AMI_values_db, L_list, "AMI_values_db", file)
+    #create_metric_table(ARI_values_db, L_list, "ARI_values_db", file)
+    #create_metric_table(num_clusters_db, L_list, "clusters_values_db", file)
+    #create_metric_table(num_outliers_db, L_list, "outliers_values_db", file)

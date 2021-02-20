@@ -3,6 +3,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.cm as cm
 import numpy as np
 import warnings
+import os
 
 
 markers = ["o", "s", "v", "^", "<", ">", "p", "P", "*", "H", "X", "D", "1", "+"]
@@ -84,7 +85,7 @@ def plot3Dcluster(points: np.ndarray, labels:np.ndarray, message="", marker="o")
     plt.show()
 
 
-def plot_curves(curves, MValues, x_message, y_message):
+def plot_curves(curves, MValues, x_message, y_message, file):
     for i in range(len(curves)):
         plt.plot(curves[i][0], curves[i][1], label=f'MinPts = {MValues[i]}', marker=markers[i])
 
@@ -93,6 +94,10 @@ def plot_curves(curves, MValues, x_message, y_message):
 
     plt.legend(bbox_to_anchor=(1.04,1), loc="upper left")
     plt.show()
+
+    if not os.path.exists(file[:-5]):
+        os.makedirs(file[:-5])
+    plt.savefig(f'{file[:-5]}/Plot_{x_message}_{y_message}.png')
 
 
 if __name__ == '__main__':
