@@ -120,19 +120,19 @@ if __name__ == '__main__':
     metric1_curves.append(curve3)
 
     x1 = [10, 20, 30]
-    y1 = [20, 40, 10]
+    y1 = [20, 25, 10]
     curve1 = []
     curve1.append(x1)
     curve1.append(y1)
 
     x2 = [10, 20, 30]
-    y2 = [40, 10, 30]
+    y2 = [43, 15, 40]
     curve2 = []
     curve2.append(x2)
     curve2.append(y2)
 
     x3 = [10, 20, 30]
-    y3 = [10, 20, 30]
+    y3 = [12, 7, 41]
     curve3 = []
     curve3.append(x3)
     curve3.append(y3)
@@ -142,19 +142,19 @@ if __name__ == '__main__':
     metric2_curves.append(curve2)
     metric2_curves.append(curve3)
 
-    x1 = [10, 20, 30]
+    x1 = [16, 20, 23]
     y1 = [20, 40, 10]
     curve1 = []
     curve1.append(x1)
     curve1.append(y1)
 
-    x2 = [10, 20, 30]
+    x2 = [11, 30, 31]
     y2 = [40, 10, 30]
     curve2 = []
     curve2.append(x2)
     curve2.append(y2)
 
-    x3 = [10, 20, 30]
+    x3 = [5, 25, 36]
     y3 = [10, 20, 30]
     curve3 = []
     curve3.append(x3)
