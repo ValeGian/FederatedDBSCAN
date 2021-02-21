@@ -85,9 +85,9 @@ def plot3Dcluster(points: np.ndarray, labels:np.ndarray, message="", marker="o")
     plt.show()
 
 
-def plot_curves(curves, MValues, x_message, y_message, file):
+def plot_curves(curves, MValues, label, x_message, y_message, file):
     for i in range(len(curves)):
-        plt.plot(curves[i][0], curves[i][1], label=f'MinPts = {MValues[i]}', marker=markers[i])
+        plt.plot(curves[i][0], curves[i][1], label=f'{label} = {MValues[i]}', marker=markers[i])
 
     plt.xlabel(x_message)
     plt.ylabel(y_message)
@@ -95,9 +95,9 @@ def plot_curves(curves, MValues, x_message, y_message, file):
     plt.legend(bbox_to_anchor=(1.04,1), loc="upper left")
     plt.show()
 
-    if not os.path.exists(file[:-5]):
-        os.makedirs(file[:-5])
-    plt.savefig(f'{file[:-5]}/Plot_{x_message}_{y_message}.png')
+    #if not os.path.exists(file[:-5]):
+    #    os.makedirs(file[:-5])
+    #plt.savefig(f'{file[:-5]}/Plot_{x_message}_{y_message}.png', bbox_inches='tight')
 
 
 if __name__ == '__main__':

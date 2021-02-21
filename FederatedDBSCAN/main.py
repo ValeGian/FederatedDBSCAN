@@ -74,30 +74,3 @@ if __name__ == '__main__':
           f'AMI: {cltr.AMI_score(Tlabels, predicted_labels):.4f}\t-\t')
           #f'BCubed PRECISION: {cltr.BCubed_Precision_score(Tlabels, predicted_labels):.4f}\t-\t'
           #f'BCubed RECALL: {cltr.BCubed_Recall_score(Tlabels, predicted_labels):.4f}')
-'''
-    for L in np.arange(1, 8, 0.5)/100:
-        MinPts = 4
-        file = "banana.arff"
-        points, labels = arff.loadarffNDArray(file)
-
-        predicted_labels = cltr.dbscan(points, eps=L/2, min_pts=MinPts)
-        plt.plot2Dcluster(points, predicted_labels)
-
-        print(f'L: {L:.3f}:\t-\t'
-              f'PURITY: {cltr.PURITY_score(labels, predicted_labels):.4f}\t-\t'
-              f'ARI: {cltr.ARI_score(labels, predicted_labels):.4f}\t-\t'
-              f'AMI: {cltr.AMI_score(labels, predicted_labels):.4f}')
-
-    for MinPts in range(2, 10):
-        L = 0.2
-        file = "banana.arff"
-        points, labels = arff.loadarffNDArray(file)
-
-        predicted_labels = cltr.dbscan(points, eps=L/2, min_pts=MinPts)
-        plt.plot2Dcluster(points, predicted_labels)
-
-        print(f'MinPts: {MinPts}:\t-\t'
-              f'PURITY: {cltr.PURITY_score(labels, predicted_labels):.4f}\t-\t'
-              f'ARI: {cltr.ARI_score(labels, predicted_labels):.4f}\t-\t'
-              f'AMI: {cltr.AMI_score(labels, predicted_labels):.4f}')
-'''
