@@ -30,7 +30,7 @@ def create_metric_table(metric_values, column_list, name, file):
     if not os.path.exists(file[:-5]):
         os.makedirs(file[:-5])
 
-    plott.savefig(f'{file[:-5]}/table_{name}.png')
+    plott.savefig(f'{file[:-5]}/table_{name}.png', bbox_inches="tight", pad_inches=1)
     #plott.show()
 
 
@@ -91,16 +91,21 @@ def execute_federated(M, L, MIN_PTS):
 
 if __name__ == '__main__':
 
+    #file = "s-set1.arff"
     file = "banana.arff"
     M = 2
-    partitioning_method = 1
+    partitioning_method = 0
 
     arf = prt.partitionDataset(file, M, partitioning_method)
     dimensions = len(arf[0][0]) - 1
 
-    L_list = ["L\MinPTs"]
+    L_list = ["MinPts \ L"]
+    eps_list = ["MinPts \ Eps"]
+    #range_L = (10000, 100000, 10000)
+
     range_L = (2, 40, 2)
     range_minPts = (2, 8)
+    #range_minPts = (2, 11)
 
     cols = int(((range_L[1] - range_L[0]) * range_L[2] ** -1)) + 1
     rows = range_minPts[1] - range_minPts[0]
@@ -155,6 +160,7 @@ if __name__ == '__main__':
             PURITY_values[i][0] = PURITY_values_db[i][0] = AMI_values[i][0] = AMI_values_db[i][0] = ARI_values[i][0] = ARI_values_db[i][0] = num_outliers[i][0] = num_clusters[i][0] = num_outliers_db[i][0] = num_clusters_db[i][0] = MinPts
             if first_iteration:
                 L_list.append(L)
+                eps_list.append(L/2)
 
             federated_labels = execute_federated(M, L, MinPts)
 
@@ -224,8 +230,8 @@ if __name__ == '__main__':
     create_metric_table(num_clusters, L_list, "clusters_values", file)
     create_metric_table(num_outliers, L_list, "outliers_values", file)
 
-    create_metric_table(PURITY_values_db, L_list, "PURITY_values_db", file)
-    create_metric_table(AMI_values_db, L_list, "AMI_values_db", file)
-    create_metric_table(ARI_values_db, L_list, "ARI_values_db", file)
-    create_metric_table(num_clusters_db, L_list, "clusters_values_db", file)
-    create_metric_table(num_outliers_db, L_list, "outliers_values_db", file)
+    create_metric_table(PURITY_values_db, eps_list, "PURITY_values_db", file)
+    create_metric_table(AMI_values_db, eps_list, "AMI_values_db", file)
+    create_metric_table(ARI_values_db, eps_list, "ARI_values_db", file)
+    create_metric_table(num_clusters_db, eps_list, "clusters_values_db", file)
+    create_metric_table(num_outliers_db, eps_list, "outliers_values_db", file)
