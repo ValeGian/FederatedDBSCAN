@@ -1,7 +1,7 @@
 from sklearn.cluster import DBSCAN
 import sklearn.metrics as mtr
 import numpy as np
-
+import bcubed
 
 def dbscan(points: np.ndarray, eps, min_pts) -> np.ndarray:
     clustering = DBSCAN(eps=eps, min_samples=min_pts)
@@ -29,6 +29,23 @@ def compute_clusters(labels):
 
     return len(count_clusters)
 
+def BCubed_Precision_score(true_labels, predicted_labels):
+    ldict = {}
+    cdict = {}
+    for i in range(len(true_labels)):
+        ldict[i] = set([true_labels[i]])
+        cdict[i] = set([predicted_labels[i]])
+    return bcubed.precision(cdict, ldict)
+
+
+def BCubed_Recall_score(true_labels, predicted_labels):
+    ldict = {}
+    cdict = {}
+    for i in range(len(true_labels)):
+        ldict[i] = set([true_labels[i]])
+        cdict[i] = set([predicted_labels[i]])
+    return bcubed.recall(cdict, ldict)
+
 def num_outliers(labels):
     count_outliers = 0
     for label in labels:
@@ -36,3 +53,4 @@ def num_outliers(labels):
             count_outliers += 1
 
     return count_outliers
+
