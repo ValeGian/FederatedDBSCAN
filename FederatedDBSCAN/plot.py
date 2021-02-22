@@ -3,7 +3,6 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.cm as cm
 import numpy as np
 import warnings
-import os
 
 
 markers = ["o", "s", "v", "^", "<", ">", "p", "P", "*", "H", "X", "D", "1", "+"]
@@ -81,7 +80,7 @@ def plot3Dcluster(points: np.ndarray, labels:np.ndarray, message="", marker="o")
     print(f'{message} - '
           f'{len(labels)} Points - '
           f'{len(np.unique(labels)) - (1 if count_outliers > 0 else 0)} Clusters - '
-          f'{count_outliers} Outliers')
+          f'{count_outliers} Outliers\n')
     plt.show()
 
 
@@ -98,78 +97,3 @@ def plot_curves(curves, MValues, label, x_message, y_message, file):
     #if not os.path.exists(file[:-5]):
     #    os.makedirs(file[:-5])
     #plt.savefig(f'{file[:-5]}/Plot_{x_message}_{y_message}.png', bbox_inches='tight')
-
-
-if __name__ == '__main__':
-    x1 = [10, 20, 30]
-    y1 = [20, 40, 10]
-    curve1 = []
-    curve1.append(x1)
-    curve1.append(y1)
-
-    x2 = [10, 20, 30]
-    y2 = [40, 10, 30]
-    curve2 = []
-    curve2.append(x2)
-    curve2.append(y2)
-
-    x3 = [10, 20, 30]
-    y3 = [10, 20, 30]
-    curve3 = []
-    curve3.append(x3)
-    curve3.append(y3)
-
-    metric1_curves = []
-    metric1_curves.append(curve1)
-    metric1_curves.append(curve2)
-    metric1_curves.append(curve3)
-
-    x1 = [10, 20, 30]
-    y1 = [20, 25, 10]
-    curve1 = []
-    curve1.append(x1)
-    curve1.append(y1)
-
-    x2 = [10, 20, 30]
-    y2 = [43, 15, 40]
-    curve2 = []
-    curve2.append(x2)
-    curve2.append(y2)
-
-    x3 = [10, 20, 30]
-    y3 = [12, 7, 41]
-    curve3 = []
-    curve3.append(x3)
-    curve3.append(y3)
-
-    metric2_curves = []
-    metric2_curves.append(curve1)
-    metric2_curves.append(curve2)
-    metric2_curves.append(curve3)
-
-    x1 = [16, 20, 23]
-    y1 = [20, 40, 10]
-    curve1 = []
-    curve1.append(x1)
-    curve1.append(y1)
-
-    x2 = [11, 30, 31]
-    y2 = [40, 10, 30]
-    curve2 = []
-    curve2.append(x2)
-    curve2.append(y2)
-
-    x3 = [5, 25, 36]
-    y3 = [10, 20, 30]
-    curve3 = []
-    curve3.append(x3)
-    curve3.append(y3)
-
-    metric3_curves = []
-    metric3_curves.append(curve1)
-    metric3_curves.append(curve2)
-    metric3_curves.append(curve3)
-
-    plot_curves(metric1_curves, [3, 4, 6], "L", "PURITY")
-    plot_curves(metric2_curves, [3, 4, 6], "L", "AMI")
-    plot_curves(metric3_curves, [3, 4, 6], "EPSI", "ARI")

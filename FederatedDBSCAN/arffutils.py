@@ -11,9 +11,9 @@ def loadarff(file):
     return arffsc.loadarff(path)
 
 
-def loadarffNDArray(file):
+def loadarff_NDArray(file):
     arff = loadarff(file)
-    return arffToNDArray(arff)
+    return arff_to_NDArray(arff)
 
 
 def loadpartition(partition_index):
@@ -21,9 +21,9 @@ def loadpartition(partition_index):
     return arffsc.loadarff(path)
 
 
-def loadpartitionNDArray(partition_index):
+def loadpartition_NDArray(partition_index):
     arff = loadpartition(partition_index)
-    return arffToNDArray(arff)
+    return arff_to_NDArray(arff)
 
 
 def dumpArff(df, partition_index):
@@ -42,7 +42,7 @@ def dumpArff(df, partition_index):
         arff.dump(arff_dic, f)
 
 
-def arffToNDArray(arff) -> (np.ndarray, np.ndarray):
+def arff_to_NDArray(arff) -> (np.ndarray, np.ndarray):
     data = arff[0]
     meta = arff[1]
     classes = np.unique(data[meta.names()[-1]]).tolist()

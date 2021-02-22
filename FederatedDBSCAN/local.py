@@ -4,29 +4,29 @@ import math
 import arffutils as arff
 
 
-def get_all_neighbor(cell, get_corners=False):
+def get_all_neighbors(cell, get_corners=False):
     diag_coord = [(x - 1, x, x + 1) for x in cell]
 
     cartesian_product = [[]]
     for pool in diag_coord:
         cartesian_product = [(x + [y]) for x in cartesian_product for y in pool]
 
-    result = []
+    neighbors = []
     for prod in cartesian_product:
-        if get_corners == True:
-            result.append(tuple(prod))
+        if get_corners:
+            neighbors.append(tuple(prod))
         else:
             differential_coord = 0
             for i in range(len(prod)):
                 if prod[i] != cell[i]:
                     differential_coord += 1
             if differential_coord == 1:
-                result.append(tuple(prod))
+                neighbors.append(tuple(prod))
 
-    if get_corners == True:
-        result.remove(cell) # remove the cell itself
+    if get_corners:
+        neighbors.remove(cell) # remove the cell itself
 
-    return result
+    return neighbors
 
 
 def get_points(partition_index, L, floor=False):
@@ -129,7 +129,7 @@ def assign_points_to_cluster(my_index, array_cells, labels, L):
         else:
             min_dist = float('inf')
             cluster_to_assign = -1
-            check_list = get_all_neighbor(actual_cell)
+            check_list = get_all_neighbors(actual_cell)
             for check_cell in check_list:
                 if check_cell in dense_cells:
                     cell_mid_point = tuple(cell_coord * L + L/2 for cell_coord in check_cell)
@@ -148,7 +148,3 @@ def assign_points_to_cluster(my_index, array_cells, labels, L):
                 labels_to_return.append(cluster_to_assign)
 
     return np.array(points_to_return), np.array(labels_to_return)
-
-
-if __name__ == '__main__':
-    print(compute_local_update(0))

@@ -1,29 +1,29 @@
 import numpy as np
 
 
-def get_all_neighbor(cell, get_corners=False):
+def get_all_neighbors(cell, get_corners=False):
     diag_coord = [(x - 1, x, x + 1) for x in cell]
 
     cartesian_product = [[]]
     for pool in diag_coord:
         cartesian_product = [(x + [y]) for x in cartesian_product for y in pool]
 
-    result = []
+    neighbors = []
     for prod in cartesian_product:
-        if get_corners == True:
-            result.append(tuple(prod))
+        if get_corners:
+            neighbors.append(tuple(prod))
         else:
             differential_coord = 0
             for i in range(len(prod)):
                 if prod[i] != cell[i]:
                     differential_coord += 1
             if differential_coord == 1:
-                result.append(tuple(prod))
+                neighbors.append(tuple(prod))
 
-    if get_corners == True:
-        result.remove(cell) # remove the cell itself
+    if get_corners:
+        neighbors.remove(cell) # remove the cell itself
 
-    return result
+    return neighbors
 
 
 def compute_clusters(contribution_map, MIN_PTS):
@@ -56,14 +56,14 @@ def compute_clusters(contribution_map, MIN_PTS):
             labels.append(cluster_ID)
             clustered[curr_index] = 1
 
-            list_of_cell_to_check = get_all_neighbor(curr_cell)
+            list_of_cell_to_check = get_all_neighbors(curr_cell)
             while len(list_of_cell_to_check) > 0:
                 neighbor = list_of_cell_to_check.pop(0)
                 neighbor_index = key_list.index(neighbor) if neighbor in key_list else ""
                 if neighbor in key_list and visited[neighbor_index] == 0:
                     visited[neighbor_index] = 1
                     if value_list[neighbor_index] >= MIN_PTS:
-                        list_of_cell_to_check += get_all_neighbor(neighbor)
+                        list_of_cell_to_check += get_all_neighbors(neighbor)
                     if clustered[neighbor_index] == 0:
                         cells.append(neighbor)
                         labels.append(cluster_ID)

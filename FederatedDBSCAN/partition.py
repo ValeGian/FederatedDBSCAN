@@ -9,7 +9,7 @@ PARTITIONS_PATH = "./partitions/"
 PARTITIONING_METHODS = ["stratified", "separated"]
 
 
-def partitionDataset(file, M=1, partitioning_method=0):
+def partition_dataset(file, M=1, partitioning_method=0):
     """ Partitions the dataset and saves each partition in a file
 
     :param file: str. Filename to open
@@ -19,7 +19,7 @@ def partitionDataset(file, M=1, partitioning_method=0):
         data: record array. The data of the arff file, accessible by attribute names
         meta: MetaData. Contains information about the arff file such as name and type of attributes, the relation (name of the dataset), etc.
     """
-    removePartitions()
+    remove_partitions()
 
     data, meta = arff.loadarff(file)
 
@@ -40,7 +40,7 @@ def partitionDataset(file, M=1, partitioning_method=0):
             separatedL[classes.index(elem[-1])].append(elem)
 
         if M >= N:
-            sub = obtainSubdivision(N, M)
+            sub = obtain_subdivision(N, M)
             count = 0
             for i in range(N):
                 for j in range(sub[i]):
@@ -62,12 +62,12 @@ def partitionDataset(file, M=1, partitioning_method=0):
     return data, meta
 
 
-def removePartitions():
+def remove_partitions():
     for file in os.listdir(PARTITIONS_PATH):
         os.remove(f'{PARTITIONS_PATH}{file}')
 
 
-def obtainSubdivision(num_class, num_node):
+def obtain_subdivision(num_class, num_node):
     arr_to_return = np.full(num_class, math.floor(num_node / num_class))
     for i in range(num_node % num_class):
         arr_to_return[i] += 1
