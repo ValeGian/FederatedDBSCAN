@@ -67,7 +67,7 @@ def execute_federated(M, L, MIN_PTS):
             elaborated_points = np.concatenate((elaborated_points, local_points), axis=0)
             elaborated_labels = np.concatenate((elaborated_labels, local_labels), axis=0)
 
-    return elaborated_labels
+    return elaborated_points, elaborated_labels
 
 
     '''print(f'Federated\t>>\t'
@@ -91,8 +91,8 @@ def execute_federated(M, L, MIN_PTS):
 
 if __name__ == '__main__':
 
-    #file = "s-set1.arff"
-    file = "banana.arff"
+    file = "s-set1.arff"
+    #file = "banana.arff"
     M = 2
     partitioning_method = 0
 
@@ -101,11 +101,8 @@ if __name__ == '__main__':
 
     L_list = ["MinPts \ L"]
     eps_list = ["MinPts \ Eps"]
-    #range_L = (10000, 100000, 10000)
-
-    range_L = (2, 40, 2)
-    range_minPts = (2, 8)
-    #range_minPts = (2, 11)
+    range_L = (15000, 75000, 5000)
+    range_minPts = (8, 16, 1)
 
     cols = int(((range_L[1] - range_L[0]) * range_L[2] ** -1)) + 1
     rows = range_minPts[1] - range_minPts[0]
@@ -139,7 +136,15 @@ if __name__ == '__main__':
     db_c_aris = []
     db_c_num_clusters = []
 
-    for MinPts in range(range_minPts[0], range_minPts[1]):
+    fd_max_avg = 0
+    fd_max_L = 0
+    fd_max_MinPts = 0
+
+    db_max_avg = 0
+    db_max_L = 0
+    db_max_MinPts = 0
+
+    for MinPts in range(range_minPts[0], range_minPts[1], range_minPts[2]):
 
         min_pts_values.append(MinPts)
         l_values = []
@@ -154,19 +159,27 @@ if __name__ == '__main__':
         db_aris = []
         db_num_clusters = []
 
-        for L in np.arange(range_L[0], range_L[1], range_L[2]) / 1000:
+        for L in np.arange(range_L[0], range_L[1], range_L[2]):
             l_values.append(L)
-
+            avg = 0
             PURITY_values[i][0] = PURITY_values_db[i][0] = AMI_values[i][0] = AMI_values_db[i][0] = ARI_values[i][0] = ARI_values_db[i][0] = num_outliers[i][0] = num_clusters[i][0] = num_outliers_db[i][0] = num_clusters_db[i][0] = MinPts
             if first_iteration:
                 L_list.append(L)
                 eps_list.append(L/2)
 
-            federated_labels = execute_federated(M, L, MinPts)
+            federated_points, federated_labels = execute_federated(M, L, MinPts)
 
             purity = cltr.PURITY_score(Tlabels, federated_labels)
             ami = cltr.AMI_score(Tlabels, federated_labels)
             ari = cltr.ARI_score(Tlabels, federated_labels)
+
+            avg += purity + ami + ari
+            avg = avg
+
+            if avg > fd_max_avg:
+                fd_max_avg = avg
+                fd_max_L = L
+                fd_max_MinPts = MinPts
 
             fd_purities.append(purity)
             fd_amis.append(ami)
@@ -184,6 +197,14 @@ if __name__ == '__main__':
             purity = cltr.PURITY_score(Tlabels_db, dbscan_labels)
             ami = cltr.AMI_score(Tlabels_db, dbscan_labels)
             ari = cltr.ARI_score(Tlabels_db, dbscan_labels)
+
+            avg += purity + ami + ari
+            avg = avg
+
+            if avg > db_max_avg:
+                db_max_avg = avg
+                db_max_L = L
+                db_max_MinPts = MinPts
 
             db_purities.append(purity)
             db_amis.append(ami)
@@ -214,24 +235,27 @@ if __name__ == '__main__':
         db_c_aris.append([l_values, db_aris])
         db_c_num_clusters.append([l_values, db_num_clusters])
 
-    plt.plot_curves(fd_c_purities, min_pts_values, "MinPts", "L", "PURITY", file)
-    plt.plot_curves(fd_c_amis, min_pts_values, "MinPts", "L", "AMI", file)
-    plt.plot_curves(fd_c_aris, min_pts_values, "MinPts", "L", "ARI", file)
-    plt.plot_curves(fd_c_num_clusters, min_pts_values, "MinPts", "L", "#Clusters", file)
+    print(f'Federated: MinPts->{fd_max_MinPts} , L->{fd_max_L}')
+    print(f'DBSCAN: MinPts->{db_max_MinPts} , L->{db_max_L}')
 
-    plt.plot_curves(db_c_purities, min_pts_values, "MinPts", "Eps = L/2", "PURITY", file)
-    plt.plot_curves(db_c_amis, min_pts_values, "MinPts", "Eps = L/2", "AMI", file)
-    plt.plot_curves(db_c_aris, min_pts_values, "MinPts", "Eps = L/2", "ARI", file)
-    plt.plot_curves(db_c_num_clusters, min_pts_values, "MinPts", "Eps = L/2", "#Clusters", file)
-
-    create_metric_table(PURITY_values, L_list, "PURITY_values", file)
-    create_metric_table(AMI_values, L_list, "AMI_values", file)
-    create_metric_table(ARI_values, L_list, "ARI_values", file)
-    create_metric_table(num_clusters, L_list, "clusters_values", file)
-    create_metric_table(num_outliers, L_list, "outliers_values", file)
-
-    create_metric_table(PURITY_values_db, eps_list, "PURITY_values_db", file)
-    create_metric_table(AMI_values_db, eps_list, "AMI_values_db", file)
-    create_metric_table(ARI_values_db, eps_list, "ARI_values_db", file)
-    create_metric_table(num_clusters_db, eps_list, "clusters_values_db", file)
-    create_metric_table(num_outliers_db, eps_list, "outliers_values_db", file)
+#plt.plot_curves(fd_c_purities, min_pts_values, "MinPts", "L", "PURITY", file)
+    #plt.plot_curves(fd_c_amis, min_pts_values, "MinPts", "L", "AMI", file)
+    #plt.plot_curves(fd_c_aris, min_pts_values, "MinPts", "L", "ARI", file)
+    #plt.plot_curves(fd_c_num_clusters, min_pts_values, "MinPts", "L", "#Clusters", file)
+#
+    #plt.plot_curves(db_c_purities, min_pts_values, "MinPts", "Eps = L/2", "PURITY", file)
+    #plt.plot_curves(db_c_amis, min_pts_values, "MinPts", "Eps = L/2", "AMI", file)
+    #plt.plot_curves(db_c_aris, min_pts_values, "MinPts", "Eps = L/2", "ARI", file)
+    #plt.plot_curves(db_c_num_clusters, min_pts_values, "MinPts", "Eps = L/2", "#Clusters", file)
+#
+    #create_metric_table(PURITY_values, L_list, "PURITY_values", file)
+    #create_metric_table(AMI_values, L_list, "AMI_values", file)
+    #create_metric_table(ARI_values, L_list, "ARI_values", file)
+    #create_metric_table(num_clusters, L_list, "clusters_values", file)
+    #create_metric_table(num_outliers, L_list, "outliers_values", file)
+#
+    #create_metric_table(PURITY_values_db, eps_list, "PURITY_values_db", file)
+    #create_metric_table(AMI_values_db, eps_list, "AMI_values_db", file)
+    #create_metric_table(ARI_values_db, eps_list, "ARI_values_db", file)
+    #create_metric_table(num_clusters_db, eps_list, "clusters_values_db", file)
+    #create_metric_table(num_outliers_db, eps_list, "outliers_values_db", file)
