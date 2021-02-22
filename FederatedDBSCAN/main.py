@@ -19,10 +19,6 @@ if __name__ == '__main__':
     L = 40000
     MIN_PTS = 12
 
-    #DBSCAN
-    L = 45000
-    MIN_PTS = 9
-
     arf = prt.partitionDataset(file, M, partitioning_method)
     dimensions = len(arf[0][0]) - 1
 
