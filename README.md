@@ -9,4 +9,4 @@ The idea is to train a model, in a "collaborative" way, without transferring the
 <img src='steps.png'>
 
 ## Benchmarking
-The algorithm was tested with various parameter settings and against different data sets. its performance was then compared with that of a standard DBSCAN. No substantial difference emerged from this comparison.
+The algorithm was tested with various parameter settings and against different data sets. Its performance was then compared with that of a standard DBSCAN. No substantial difference emerged from this comparison.
